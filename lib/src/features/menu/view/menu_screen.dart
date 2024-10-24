@@ -1,4 +1,6 @@
+import 'package:coffee_shop/src/app.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
+import 'package:coffee_shop/src/features/menu/view/widgets/menu_item_card.dart';
 import 'package:coffee_shop/src/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -31,9 +33,10 @@ class _MenuScreenState extends State<MenuScreen> {
                       padding: const EdgeInsets.all(8),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16)),
-                      selectedColor: isActive ? AppColors.primaryColor : Colors.white,
+                      selectedColor:
+                          isActive ? AppColors.primaryColor : AppColors.white,
                       labelStyle: TextStyle(
-                          color: isActive ? Colors.white : Colors.black,
+                          color: isActive ? AppColors.white : AppColors.black,
                           fontSize: 14),
                       label: Text(widget.categories[index].title),
                       selected: isActive,
@@ -51,6 +54,40 @@ class _MenuScreenState extends State<MenuScreen> {
                   },
                 ),
               ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              sliver: SliverList.builder(
+                  itemCount: widget.categories.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.categories[index].title,
+                            style: const TextStyle(
+                                fontSize: 32, fontWeight: FontWeight.w600),
+                          ),
+                          GridView(
+                            shrinkWrap: true,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                            ),
+                            children: [
+                              MenuItemCard(item: itemsMock[0]),
+                              MenuItemCard(item: itemsMock[1]),
+                              MenuItemCard(item: itemsMock[2]),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
             ),
           ],
         ),
