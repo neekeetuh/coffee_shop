@@ -5,9 +5,13 @@ class CartControlButton extends StatelessWidget {
   const CartControlButton({
     super.key,
     required this.count,
+    required this.onIncrease,
+    required this.onDecrease,
   });
 
   final int count;
+  final void Function() onIncrease;
+  final void Function() onDecrease;
 
   @override
   Widget build(BuildContext context) {
@@ -17,17 +21,9 @@ class CartControlButton extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: AppColors.primaryColor),
-            height: 24,
-            width: 24,
-            child: const Icon(
-              Icons.remove,
-              size: 16,
-              color: AppColors.white,
-            ),
+          ChangeAmountButton(
+            icon: Icons.remove,
+            onTap: onDecrease,
           ),
           Expanded(
             child: Container(
@@ -43,19 +39,41 @@ class CartControlButton extends StatelessWidget {
               ),
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: AppColors.primaryColor),
-            height: 24,
-            width: 24,
-            child: const Icon(
-              Icons.add,
-              size: 16,
-              color: AppColors.white,
-            ),
+          ChangeAmountButton(
+            icon: Icons.add,
+            onTap: onIncrease,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ChangeAmountButton extends StatelessWidget {
+  const ChangeAmountButton({
+    super.key,
+    required this.onTap,
+    required this.icon,
+  });
+
+  final void Function() onTap;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: AppColors.primaryColor),
+        height: 24,
+        width: 24,
+        child: Icon(
+          icon,
+          size: 16,
+          color: AppColors.white,
+        ),
       ),
     );
   }
