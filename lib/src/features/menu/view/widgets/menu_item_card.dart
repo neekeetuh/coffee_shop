@@ -1,4 +1,6 @@
 import 'package:coffee_shop/src/features/menu/models/menu_item.dart';
+import 'package:coffee_shop/src/features/menu/view/widgets/cart_control_button.dart';
+import 'package:coffee_shop/src/features/menu/view/widgets/price_button.dart';
 import 'package:coffee_shop/src/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -26,29 +28,19 @@ class MenuItemCard extends StatelessWidget {
             Image.asset(
               item.image,
               height: 100,
+              fit: BoxFit.fitWidth,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Text(
                 item.title,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              alignment: Alignment.center,
-              width: double.infinity,
-              height: 24,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: AppColors.primaryColor),
-              child: Text(
-                '${item.price} руб',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.white,
-                ),
-              ),
+            // PriceButton(price: item.price)
+            const CartControlButton(
+              count: 1,
             )
           ],
         ),

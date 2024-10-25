@@ -23,6 +23,7 @@ class _MenuScreenState extends State<MenuScreen> {
             SliverPadding(
               padding: const EdgeInsets.only(left: 16),
               sliver: SliverAppBar(
+                scrolledUnderElevation: 0.0,
                 pinned: true,
                 flexibleSpace: ListView.separated(
                   scrollDirection: Axis.horizontal,
@@ -60,32 +61,32 @@ class _MenuScreenState extends State<MenuScreen> {
               sliver: SliverList.builder(
                   itemCount: widget.categories.length,
                   itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Text(
                             widget.categories[index].title,
                             style: const TextStyle(
                                 fontSize: 32, fontWeight: FontWeight.w600),
                           ),
-                          GridView(
-                            shrinkWrap: true,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 16,
-                              mainAxisSpacing: 16,
-                            ),
-                            children: [
-                              MenuItemCard(item: itemsMock[0]),
-                              MenuItemCard(item: itemsMock[1]),
-                              MenuItemCard(item: itemsMock[2]),
-                            ],
+                        ),
+                        GridView(
+                          shrinkWrap: true,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
                           ),
-                        ],
-                      ),
+                          children: [
+                            MenuItemCard(item: itemsMock[0]),
+                            // MenuItemCard(item: itemsMock[1]),
+                            MenuItemCard(item: itemsMock[2]),
+                          ],
+                        ),
+                      ],
                     );
                   }),
             ),
