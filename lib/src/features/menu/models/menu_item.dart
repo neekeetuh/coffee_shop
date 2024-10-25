@@ -1,4 +1,5 @@
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
+import 'package:coffee_shop/src/theme/image_sources.dart';
 
 class MenuItem {
   final String title;
@@ -6,5 +7,9 @@ class MenuItem {
   final int price;
   final MenuCategory category;
 
-  MenuItem({required this.title, required this.image, required this.price, required this.category});
+  MenuItem(
+      {required this.title,
+      this.image = ImageSources.coffeDefault,
+      required this.price,
+      required this.category});
 }
