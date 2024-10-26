@@ -56,40 +56,37 @@ class _MenuScreenState extends State<MenuScreen> {
                 ),
               ),
             ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              sliver: SliverList.builder(
-                  itemCount: widget.categories.length,
-                  itemBuilder: (context, index) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: Text(
-                            widget.categories[index].title,
-                            style: const TextStyle(
-                                fontSize: 32, fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        GridView(
-                          shrinkWrap: true,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                          ),
-                          children: [
-                            MenuItemCard(item: itemsMock[0]),
-                            // MenuItemCard(item: itemsMock[1]),
-                            MenuItemCard(item: itemsMock[2]),
-                          ],
-                        ),
-                      ],
-                    );
-                  }),
-            ),
+            for (var category in widget.categories) ...[
+              SliverPadding(
+                padding: const EdgeInsets.all(16.0),
+                sliver: SliverToBoxAdapter(
+                  child: Text(
+                    category.title,
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      //TODO: implement using bloc with menu repository injection
+                      return MenuItemCard(item: itemsMock[index]);
+                    },
+                    childCount: 4,
+                  ),
+                ),
+              )
+            ]
           ],
         ),
       ),
