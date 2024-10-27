@@ -1,5 +1,5 @@
-import 'package:coffee_shop/src/app.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
+import 'package:coffee_shop/src/features/menu/models/menu_item.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/menu_item_card.dart';
 import 'package:flutter/material.dart';
 
@@ -7,9 +7,11 @@ class CategorySectionSliver extends StatelessWidget {
   const CategorySectionSliver({
     super.key,
     required this.category,
+    required this.items,
   });
 
   final MenuCategory category;
+  final List<MenuItem> items;
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +39,9 @@ class CategorySectionSliver extends StatelessWidget {
             ),
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                //TODO: implement using bloc with menu repository injection
-                return MenuItemCard(item: itemsMock[index]);
+                return MenuItemCard(item: items[index]);
               },
-              childCount: 4,
+              childCount: items.length,
             ),
           ),
         ),

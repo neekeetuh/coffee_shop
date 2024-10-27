@@ -1,5 +1,4 @@
-import 'package:coffee_shop/src/features/menu/bloc/categories_bloc/categories_bloc.dart';
-import 'package:coffee_shop/src/features/menu/bloc/items_bloc/items_bloc.dart';
+import 'package:coffee_shop/src/features/menu/bloc/menu_bloc.dart';
 import 'package:coffee_shop/src/features/menu/data/category_repository.dart';
 import 'package:coffee_shop/src/features/menu/data/menu_repository.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
@@ -21,20 +20,12 @@ class CoffeeShopApp extends StatelessWidget {
           RepositoryProvider(create: (context) => const CategoryRepository()),
           RepositoryProvider(create: (context) => const MenuRepository()),
         ],
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (context) => CategoriesBloc(
-                  categoryRepository: context.read<CategoryRepository>()),
-            ),
-            BlocProvider(
-              create: (context) =>
-                  ItemsBloc(menuRepository: context.read<MenuRepository>()),
-            ),
-          ],
-          child: MenuScreen(
-            categories: categoriesMock,
+        child: BlocProvider(
+          create: (context) => MenuBloc(
+            categoryRepository: context.read<CategoryRepository>(),
+            menuRepository: context.read<MenuRepository>(),
           ),
+          child: const MenuScreen(),
         ),
       ),
       theme: mainTheme,
@@ -78,5 +69,5 @@ final itemsMock = <MenuItem>[
   MenuItem(title: 'Капучино', price: 50, category: categoriesMock[4]),
   MenuItem(title: 'Мокачино', price: 30, category: categoriesMock[4]),
   MenuItem(title: 'Латте', price: 50, category: categoriesMock[5]),
-  MenuItem(title: 'Латте', price: 50, category: categoriesMock[5]),
+  MenuItem(title: 'Латте2', price: 50, category: categoriesMock[5]),
 ];
