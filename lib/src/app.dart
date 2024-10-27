@@ -1,9 +1,14 @@
+import 'package:coffee_shop/src/features/menu/bloc/categories_bloc/categories_bloc.dart';
+import 'package:coffee_shop/src/features/menu/bloc/items_bloc/items_bloc.dart';
+import 'package:coffee_shop/src/features/menu/data/category_repository.dart';
+import 'package:coffee_shop/src/features/menu/data/menu_repository.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_item.dart';
 import 'package:coffee_shop/src/features/menu/view/menu_screen.dart';
 import 'package:coffee_shop/src/theme/image_sources.dart';
 import 'package:coffee_shop/src/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CoffeeShopApp extends StatelessWidget {
   const CoffeeShopApp({super.key});
@@ -11,8 +16,26 @@ class CoffeeShopApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: MenuScreen(
-        categories: categoriesMock,
+      home: MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider(create: (context) => const CategoryRepository()),
+          RepositoryProvider(create: (context) => const MenuRepository()),
+        ],
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => CategoriesBloc(
+                  categoryRepository: context.read<CategoryRepository>()),
+            ),
+            BlocProvider(
+              create: (context) =>
+                  ItemsBloc(menuRepository: context.read<MenuRepository>()),
+            ),
+          ],
+          child: MenuScreen(
+            categories: categoriesMock,
+          ),
+        ),
       ),
       theme: mainTheme,
     );
