@@ -33,10 +33,10 @@ class CategorySectionSliver extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           sliver: SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-            ),
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                mainAxisExtent: 196),
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 return MenuItemCard(item: items[index]);

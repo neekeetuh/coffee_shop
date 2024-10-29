@@ -1,8 +1,11 @@
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
 import 'package:coffee_shop/src/features/menu/providers/chosen_category_provider.dart';
+import 'package:coffee_shop/src/features/menu/view/menu_screen.dart';
 import 'package:coffee_shop/src/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+List<GlobalKey> categoriesKeys = [];
 
 class CategoriesChoiceBarSliver extends StatelessWidget {
   const CategoriesChoiceBarSliver({
@@ -14,6 +17,8 @@ class CategoriesChoiceBarSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    categoriesKeys = List<GlobalKey>.generate(
+        categories.length, (index) => GlobalKey(debugLabel: index.toString()));
     return SliverPadding(
       padding: const EdgeInsets.only(left: 16),
       sliver: SliverAppBar(
@@ -23,9 +28,10 @@ class CategoriesChoiceBarSliver extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           itemCount: categories.length,
           itemBuilder: (context, index) {
-            bool isActive = index ==
-                context.watch<ChosenCategoryProvider>().chosenIndex;
+            bool isActive =
+                index == context.watch<ChosenCategoryProvider>().chosenIndex;
             return ChoiceChip(
+              key: categoriesKeys[index],
               padding: const EdgeInsets.all(8),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
@@ -38,9 +44,7 @@ class CategoriesChoiceBarSliver extends StatelessWidget {
               selected: isActive,
               showCheckmark: false,
               onSelected: (value) {
-                context
-                    .read<ChosenCategoryProvider>()
-                    .setChosenIndex(index);
+                _onSelectedCategory(context, index);
               },
               side: BorderSide.none,
             );
@@ -53,5 +57,17 @@ class CategoriesChoiceBarSliver extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _onSelectedCategory(BuildContext context, int index) {
+    final chosenCategoryProvider = context.read<ChosenCategoryProvider>();
+    if (chosenCategoryProvider.chosenIndex != index) {
+      chosenCategoryProvider.setChosenIndex(index);
+      ensureVIsibleByKey(
+          key: categoriesKeys[chosenCategoryProvider.chosenIndex]);
+      ensureVIsibleByKey(
+          key: categoriesSectionsKeys[chosenCategoryProvider.chosenIndex],
+          alignment: getAppBarHeight() / MediaQuery.sizeOf(context).height);
+    }
   }
 }
