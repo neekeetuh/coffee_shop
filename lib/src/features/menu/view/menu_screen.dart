@@ -98,15 +98,26 @@ class MenuScreen extends StatelessWidget {
     _setCategoriesSectionsHeights();
     if (scrollInfo is ScrollEndNotification &&
         scrollInfo.metrics.axis == Axis.vertical) {
-      int index = 0;
+      int firstVisibleSectionIndex = -1;
       if (categoriesSectionsHeights.isNotEmpty) {
-        final firstVisibleSectionHeight = categoriesSectionsHeights
-            .firstWhere((value) => value > getAppBarHeight());
-        index = categoriesSectionsHeights
+        final firstVisibleSectionHeight =
+            categoriesSectionsHeights.firstWhere((value) => value > 0);
+        firstVisibleSectionIndex = categoriesSectionsHeights
             .indexWhere((value) => value == firstVisibleSectionHeight);
       }
-      context.read<ChosenCategoryProvider>().setChosenIndex(index);
-      ensureVIsibleByKey(key: categoriesKeys[index]);
+      if (scrollInfo.metrics.pixels < getAppBarHeight()) {
+        context
+            .read<ChosenCategoryProvider>()
+            .setChosenIndex(firstVisibleSectionIndex);
+        ensureVIsibleByKey(key: categoriesKeys[firstVisibleSectionIndex]);
+        return false;
+      }
+      if (firstVisibleSectionIndex < categoriesSectionsHeights.length - 1) {
+        context
+            .read<ChosenCategoryProvider>()
+            .setChosenIndex(firstVisibleSectionIndex + 1);
+        ensureVIsibleByKey(key: categoriesKeys[firstVisibleSectionIndex + 1]);
+      }
     }
     return false;
   }
