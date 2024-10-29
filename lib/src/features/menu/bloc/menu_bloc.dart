@@ -21,29 +21,27 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     on<MenuEvent>((event, emit) async {
       switch (event) {
         case LoadCategoriesEvent():
-           await _onLoadCategoriesEvent(event, emit);
+          await _onLoadCategoriesEvent(event, emit);
         case LoadItemsEvent():
           await _onLoadItemsEvent(event, emit);
       }
     });
   }
 
-  Future <void> _onLoadCategoriesEvent(
+  Future<void> _onLoadCategoriesEvent(
       LoadCategoriesEvent event, Emitter<MenuState> emit) async {
-    emit(const LoadingMenuState());
+    emit(LoadingMenuState(items: state.items, categories: state.categories));
     try {
       final categories = await _categoryRepository.loadCategories();
-      //TODO: fix the bug (it doesnt work without this await, the state.categories property is null on ui)
-      await Future.delayed(const Duration(microseconds: 0));
       emit(SuccessfulMenuState(categories: categories, items: state.items));
     } on Exception catch (e) {
       emit(ErrorMenuState(error: e));
     }
   }
 
-  Future <void> _onLoadItemsEvent(
+  Future<void> _onLoadItemsEvent(
       LoadItemsEvent event, Emitter<MenuState> emit) async {
-    emit(const LoadingMenuState());
+    emit(LoadingMenuState(items: state.items, categories: state.categories));
     try {
       final items = await _menuRepository.loadAllItems();
       emit(SuccessfulMenuState(items: items, categories: state.categories));
