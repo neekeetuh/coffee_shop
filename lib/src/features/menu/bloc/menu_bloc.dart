@@ -13,7 +13,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
   final IMenuRepository _menuRepository;
 
   MenuBloc(
-      {required CategoryRepository categoryRepository,
+      {required ICategoryRepository categoryRepository,
       required IMenuRepository menuRepository})
       : _menuRepository = menuRepository,
         _categoryRepository = categoryRepository,

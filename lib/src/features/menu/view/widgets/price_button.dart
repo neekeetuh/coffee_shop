@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 class PriceButton extends StatelessWidget {
   const PriceButton({
     super.key,
-    required this.price, required this.onPressed,
+    required this.price,
+    required this.onPressed,
   });
 
   final int price;

@@ -9,7 +9,7 @@ class MenuItem {
 
   MenuItem(
       {required this.title,
-      this.image = ImageSources.coffeDefault,
+      this.image = ImageSources.coffeeDefault,
       required this.price,
       required this.category});
 }

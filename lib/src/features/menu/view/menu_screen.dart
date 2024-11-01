@@ -1,10 +1,13 @@
 import 'package:coffee_shop/src/features/menu/bloc/menu_bloc.dart';
+import 'package:coffee_shop/src/features/menu/data/category_repository.dart';
+import 'package:coffee_shop/src/features/menu/data/menu_repository.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
 import 'package:coffee_shop/src/features/menu/providers/chosen_category_provider.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/categories_choice_bar_sliver.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/category_section_sliver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 List<GlobalKey> categoriesSectionsKeys = [];
 List<double> categoriesSectionsHeights = [];
@@ -46,6 +49,34 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => ChosenCategoryProvider(),
+        )
+      ],
+      child: MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider(create: (context) => const CategoryRepository()),
+          RepositoryProvider(create: (context) => const MenuRepository()),
+        ],
+        child: BlocProvider(
+          create: (context) => MenuBloc(
+            categoryRepository: context.read<CategoryRepository>(),
+            menuRepository: context.read<MenuRepository>(),
+          ),
+          child: const MenuScreenView(),
+        ),
+      ),
+    );
+  }
+}
+
+class MenuScreenView extends StatelessWidget {
+  const MenuScreenView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     context.read<MenuBloc>().add(const LoadCategoriesEvent());
     context.read<MenuBloc>().add(const LoadItemsEvent());
     return Scaffold(
@@ -64,15 +95,16 @@ class MenuScreen extends StatelessWidget {
                   slivers: [
                     CategoriesChoiceBarSliver(
                         key: appBarKey, categories: categories),
-                    for (var i = 0; i < (categories.length); i++) ...[
-                      CategorySectionSliver(
-                        key: categoriesSectionsKeys[i],
-                        category: categories[i],
-                        items: state.items!
-                            .where((item) => item.category == categories[i])
-                            .toList(),
-                      )
-                    ],
+                    ...List.generate(
+                        categories.length,
+                        (int i) => CategorySectionSliver(
+                              key: categoriesSectionsKeys[i],
+                              category: categories[i],
+                              items: state.items!
+                                  .where(
+                                      (item) => item.category == categories[i])
+                                  .toList(),
+                            )),
                     const SliverToBoxAdapter(
                       child: SizedBox(
                         height: 16,

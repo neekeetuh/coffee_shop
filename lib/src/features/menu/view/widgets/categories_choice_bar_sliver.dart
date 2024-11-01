@@ -19,12 +19,12 @@ class CategoriesChoiceBarSliver extends StatelessWidget {
   Widget build(BuildContext context) {
     categoriesKeys = List<GlobalKey>.generate(
         categories.length, (index) => GlobalKey(debugLabel: index.toString()));
-    return SliverPadding(
-      padding: const EdgeInsets.only(left: 16),
-      sliver: SliverAppBar(
-        scrolledUnderElevation: 0.0,
-        pinned: true,
-        flexibleSpace: ListView.separated(
+    return SliverAppBar(
+      scrolledUnderElevation: 0.0,
+      pinned: true,
+      flexibleSpace: Padding(
+        padding: const EdgeInsets.only(left: 16.0),
+        child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: categories.length,
           itemBuilder: (context, index) {
@@ -66,8 +66,7 @@ class CategoriesChoiceBarSliver extends StatelessWidget {
       ensureVIsibleByKey(
           key: categoriesKeys[chosenCategoryProvider.chosenIndex]);
       ensureVIsibleByKey(
-          key: categoriesSectionsKeys[chosenCategoryProvider.chosenIndex],
-          alignment: getAppBarHeight() / MediaQuery.sizeOf(context).height);
+          key: categoriesSectionsKeys[chosenCategoryProvider.chosenIndex]);
     }
   }
 }
