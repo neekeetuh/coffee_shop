@@ -3,6 +3,7 @@ import 'package:coffee_shop/src/features/menu/data/category_repository.dart';
 import 'package:coffee_shop/src/features/menu/data/menu_repository.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
 import 'package:coffee_shop/src/features/menu/providers/chosen_category_provider.dart';
+import 'package:coffee_shop/src/features/menu/view/widgets/cart_button.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/categories_choice_bar_sliver.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/category_section_sliver.dart';
 import 'package:flutter/material.dart';
@@ -91,25 +92,33 @@ class MenuScreenView extends StatelessWidget {
               return NotificationListener<ScrollNotification>(
                 onNotification: (ScrollNotification scrollInfo) =>
                     _onScrollNotification(context, scrollInfo),
-                child: CustomScrollView(
-                  slivers: [
-                    CategoriesChoiceBarSliver(
-                        key: appBarKey, categories: categories),
-                    ...List.generate(
-                        categories.length,
-                        (int i) => CategorySectionSliver(
-                              key: categoriesSectionsKeys[i],
-                              category: categories[i],
-                              items: state.items!
-                                  .where(
-                                      (item) => item.category == categories[i])
-                                  .toList(),
-                            )),
-                    const SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: 16,
-                      ),
-                    )
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    CustomScrollView(
+                      slivers: [
+                        CategoriesChoiceBarSliver(
+                            key: appBarKey, categories: categories),
+                        ...List.generate(
+                            categories.length,
+                            (int i) => CategorySectionSliver(
+                                  key: categoriesSectionsKeys[i],
+                                  category: categories[i],
+                                  items: state.items!
+                                      .where((item) =>
+                                          item.category == categories[i])
+                                      .toList(),
+                                )),
+                        const SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: 16,
+                          ),
+                        )
+                      ],
+                    ),
+                    const CartButton(
+                      price: 139,
+                    ),
                   ],
                 ),
               );
