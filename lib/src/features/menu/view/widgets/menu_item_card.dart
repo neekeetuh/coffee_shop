@@ -1,9 +1,11 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_item.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/cart_control_button.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/price_button.dart';
 import 'package:coffee_shop/src/theme/app_colors.dart';
+import 'package:coffee_shop/src/theme/image_sources.dart';
 import 'package:flutter/material.dart';
 
 const maxAmount = 10;
@@ -35,10 +37,16 @@ class _MenuItemCardState extends State<MenuItemCard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Image.asset(
-              widget.item.image,
+            CachedNetworkImage(
+              imageUrl: widget.item.image,
               height: 100,
               fit: BoxFit.fitWidth,
+              placeholder: (context, url) =>
+                  const Center(child: CircularProgressIndicator()),
+              errorWidget: (context, _, __) => Image.asset(
+                  ImageSources.coffeeDefault,
+                  height: 100,
+                  fit: BoxFit.fitWidth),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),

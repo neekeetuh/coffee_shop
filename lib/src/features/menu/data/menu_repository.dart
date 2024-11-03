@@ -1,7 +1,10 @@
-import 'package:coffee_shop/src/features/menu/data/category_repository.dart';
+import 'dart:io';
+
+import 'package:coffee_shop/src/features/menu/data/data_sources/menu_data_source.dart';
+import 'package:coffee_shop/src/features/menu/models/dto/menu_item_dto.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_item.dart';
-import 'package:coffee_shop/src/theme/image_sources.dart';
+import 'package:coffee_shop/src/features/menu/utils/menu_items_mapper.dart';
 
 abstract interface class IMenuRepository {
   Future<List<MenuItem>> loadCategoryItems(MenuCategory category);
@@ -9,134 +12,30 @@ abstract interface class IMenuRepository {
 }
 
 final class MenuRepository implements IMenuRepository {
-  const MenuRepository();
+  final IMenuDataSource _networkMenuDataSource;
+  const MenuRepository({required IMenuDataSource networkMenuDataSource})
+      : _networkMenuDataSource = networkMenuDataSource;
   @override
   Future<List<MenuItem>> loadCategoryItems(MenuCategory category) async {
-    // TODO: implement method
-    return (itemsMock.where((item) => item.category == category).toList());
+    var dtos = <MenuItemDto>[];
+    try {
+      dtos = await _networkMenuDataSource.fetchMenuItems(
+          categoryId: category.id.toString());
+    } on SocketException {
+      //TODO: implement getting cached menu items from db
+    }
+    return dtos as List<MenuItem>;
   }
 
   @override
   Future<List<MenuItem>> loadAllItems() async {
-    return itemsMock;
+    // return itemsMock;
+    var dtos = <MenuItemDto>[];
+    try {
+      dtos = await _networkMenuDataSource.fetchMenuItems();
+    } on SocketException {
+      //TODO: implement getting cached menu items from db
+    }
+    return dtos.map((dto) => dto.toModel()).toList();
   }
 }
-
-final itemsMock = <MenuItem>[
-  MenuItem(
-      title: 'Капучино',
-      image: ImageSources.coffeeTemplate,
-      price: 50,
-      category: categoriesMock[0]),
-  MenuItem(
-      title: 'Мокачино',
-      image: ImageSources.coffe1,
-      price: 30,
-      category: categoriesMock[0]),
-  MenuItem(
-      title: 'Капучино',
-      image: ImageSources.coffe2,
-      price: 50,
-      category: categoriesMock[0]),
-  MenuItem(
-      title: 'Мокачино',
-      image: ImageSources.coffe3,
-      price: 30,
-      category: categoriesMock[0]),
-  MenuItem(
-      title: 'Латте',
-      image: ImageSources.coffe4,
-      price: 50,
-      category: categoriesMock[0]),
-  MenuItem(
-      title: 'Мокка',
-      image: ImageSources.coffe5,
-      price: 30,
-      category: categoriesMock[0]),
-  MenuItem(title: 'Капучино', price: 50, category: categoriesMock[0]),
-  MenuItem(
-      title: 'Мокачино',
-      image: ImageSources.coffe1,
-      price: 30,
-      category: categoriesMock[1]),
-  MenuItem(
-      title: 'Капучино',
-      image: ImageSources.coffe2,
-      price: 50,
-      category: categoriesMock[1]),
-  MenuItem(
-      title: 'Мокачино',
-      image: ImageSources.coffe3,
-      price: 30,
-      category: categoriesMock[2]),
-  MenuItem(
-      title: 'Латте',
-      image: ImageSources.coffe4,
-      price: 50,
-      category: categoriesMock[2]),
-  MenuItem(
-      title: 'Мокка',
-      image: ImageSources.coffe5,
-      price: 30,
-      category: categoriesMock[2]),
-  MenuItem(
-      title: 'Капучино',
-      image: ImageSources.coffeeTemplate,
-      price: 50,
-      category: categoriesMock[3]),
-  MenuItem(
-      title: 'Мокачино',
-      image: ImageSources.coffe1,
-      price: 30,
-      category: categoriesMock[3]),
-  MenuItem(
-      title: 'Капучино',
-      image: ImageSources.coffe2,
-      price: 50,
-      category: categoriesMock[4]),
-  MenuItem(
-      title: 'Мокачино',
-      image: ImageSources.coffe3,
-      price: 30,
-      category: categoriesMock[4]),
-  MenuItem(
-      title: 'Латте',
-      image: ImageSources.coffe4,
-      price: 50,
-      category: categoriesMock[5]),
-  MenuItem(
-      title: 'Мокка',
-      image: ImageSources.coffe5,
-      price: 30,
-      category: categoriesMock[5]),
-  MenuItem(
-      title: 'Капучино',
-      image: ImageSources.coffeeTemplate,
-      price: 50,
-      category: categoriesMock[5]),
-  MenuItem(
-      title: 'Мокачино',
-      image: ImageSources.coffe1,
-      price: 30,
-      category: categoriesMock[5]),
-  MenuItem(
-      title: 'Капучино',
-      image: ImageSources.coffe2,
-      price: 50,
-      category: categoriesMock[5]),
-  MenuItem(
-      title: 'Мокачино',
-      image: ImageSources.coffe3,
-      price: 30,
-      category: categoriesMock[5]),
-  MenuItem(
-      title: 'Капучино',
-      image: ImageSources.coffe2,
-      price: 50,
-      category: categoriesMock[5]),
-  MenuItem(
-      title: 'Мокачино',
-      image: ImageSources.coffe3,
-      price: 30,
-      category: categoriesMock[5]),
-];

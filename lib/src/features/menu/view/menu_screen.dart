@@ -1,11 +1,14 @@
 import 'package:coffee_shop/src/features/menu/bloc/menu_bloc.dart';
 import 'package:coffee_shop/src/features/menu/data/category_repository.dart';
+import 'package:coffee_shop/src/features/menu/data/data_sources/categories_data_source.dart';
+import 'package:coffee_shop/src/features/menu/data/data_sources/menu_data_source.dart';
 import 'package:coffee_shop/src/features/menu/data/menu_repository.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
 import 'package:coffee_shop/src/features/menu/providers/chosen_category_provider.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/cart_button.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/categories_choice_bar_sliver.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/category_section_sliver.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -45,6 +48,9 @@ void ensureVIsibleByKey({
   }
 }
 
+//TODO: initialize using di container
+final dio = Dio();
+
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
 
@@ -58,8 +64,13 @@ class MenuScreen extends StatelessWidget {
       ],
       child: MultiRepositoryProvider(
         providers: [
-          RepositoryProvider(create: (context) => const CategoryRepository()),
-          RepositoryProvider(create: (context) => const MenuRepository()),
+          RepositoryProvider(
+              create: (context) => CategoryRepository(
+                  networkCategoriesDataSource:
+                      NetworkCategoriesDataSource(dio: dio))),
+          RepositoryProvider(
+              create: (context) => MenuRepository(
+                  networkMenuDataSource: NetworkMenuDataSource(dio: Dio()))),
         ],
         child: BlocProvider(
           create: (context) => MenuBloc(
@@ -99,16 +110,17 @@ class MenuScreenView extends StatelessWidget {
                       slivers: [
                         CategoriesChoiceBarSliver(
                             key: appBarKey, categories: categories),
-                        ...List.generate(
-                            categories.length,
-                            (int i) => CategorySectionSliver(
-                                  key: categoriesSectionsKeys[i],
-                                  category: categories[i],
-                                  items: state.items!
-                                      .where((item) =>
-                                          item.category == categories[i])
-                                      .toList(),
-                                )),
+                        ...List.generate(categories.length, (int i) {
+                          final items = state.items
+                              ?.where((item) =>
+                                  item.category.id == categories[i].id)
+                              .toList();
+                          return CategorySectionSliver(
+                            key: categoriesSectionsKeys[i],
+                            category: categories[i],
+                            items: items ?? [],
+                          );
+                        }),
                         const SliverToBoxAdapter(
                           child: SizedBox(
                             height: 16,
