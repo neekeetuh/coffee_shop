@@ -74,7 +74,7 @@ class MenuScreen extends StatelessWidget {
                       NetworkCategoriesDataSource(dio: dio))),
           RepositoryProvider(
               create: (context) => MenuRepository(
-                  networkMenuDataSource: NetworkMenuDataSource(dio: Dio()))),
+                  networkMenuDataSource: NetworkMenuDataSource(dio: dio))),
         ],
         child: BlocProvider(
           create: (context) => MenuBloc(
@@ -99,50 +99,49 @@ class MenuScreenView extends StatelessWidget {
       body: SafeArea(
         child: BlocBuilder<MenuBloc, MenuState>(
           builder: (context, state) {
-            if (state is SuccessfulMenuState) {
-              final List<MenuCategory> categories = state.categories ?? [];
-              categoriesSectionsKeys = List<GlobalKey>.generate(
-                  categories.length,
-                  (index) => GlobalKey(debugLabel: index.toString()));
-              return NotificationListener<ScrollNotification>(
-                onNotification: (ScrollNotification scrollInfo) =>
-                    _onScrollNotification(context, scrollInfo),
-                child: Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    CustomScrollView(
-                      slivers: [
-                        CategoriesChoiceBarSliver(
-                            key: appBarKey, categories: categories),
-                        ...List.generate(categories.length, (int i) {
-                          final items = state.items
-                              ?.where((item) =>
-                                  item.category.id == categories[i].id)
-                              .toList();
-                          return CategorySectionSliver(
-                            key: categoriesSectionsKeys[i],
-                            category: categories[i],
-                            items: items ?? [],
-                          );
-                        }),
-                        const SliverToBoxAdapter(
-                          child: SizedBox(
-                            height: 16,
-                          ),
-                        )
-                      ],
-                    ),
-                    context.watch<CartProvider>().isNotEmpty()
-                        ? CartButton(
-                            price: context.watch<CartProvider>().totalPrice,
-                          )
-                        : const SizedBox.shrink(),
-                  ],
-                ),
+            if (state is LoadingMenuState) {
+              return const Center(
+                child: CircularProgressIndicator(),
               );
             }
-            return const Center(
-              child: CircularProgressIndicator(),
+            final List<MenuCategory> categories = state.categories ?? [];
+            categoriesSectionsKeys = List<GlobalKey>.generate(categories.length,
+                (index) => GlobalKey(debugLabel: index.toString()));
+            return NotificationListener<ScrollNotification>(
+              onNotification: (ScrollNotification scrollInfo) =>
+                  _onScrollNotification(context, scrollInfo),
+              child: Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  CustomScrollView(
+                    slivers: [
+                      CategoriesChoiceBarSliver(
+                          key: appBarKey, categories: categories),
+                      ...List.generate(categories.length, (int i) {
+                        final items = state.items
+                            ?.where(
+                                (item) => item.category.id == categories[i].id)
+                            .toList();
+                        return CategorySectionSliver(
+                          key: categoriesSectionsKeys[i],
+                          category: categories[i],
+                          items: items ?? [],
+                        );
+                      }),
+                      const SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: 16,
+                        ),
+                      )
+                    ],
+                  ),
+                  context.watch<CartProvider>().isNotEmpty()
+                      ? CartButton(
+                          price: context.watch<CartProvider>().totalPrice,
+                        )
+                      : const SizedBox.shrink(),
+                ],
+              ),
             );
           },
         ),

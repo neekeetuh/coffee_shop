@@ -8,6 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 part 'menu_event.dart';
 part 'menu_state.dart';
 
+const _pageLimit = 50;
+
 class MenuBloc extends Bloc<MenuEvent, MenuState> {
   final ICategoryRepository _categoryRepository;
   final IMenuRepository _menuRepository;
@@ -17,7 +19,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
       required IMenuRepository menuRepository})
       : _menuRepository = menuRepository,
         _categoryRepository = categoryRepository,
-        super(const InitialMenuState()) {
+        super(const IdleMenuState()) {
     on<MenuEvent>((event, emit) async {
       switch (event) {
         case LoadCategoriesEvent():
@@ -38,6 +40,8 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
       emit(SuccessfulMenuState(categories: categories, items: state.items));
     } on Exception catch (e) {
       emit(ErrorMenuState(error: e));
+    } finally {
+      emit(IdleMenuState(categories: state.categories, items: state.items));
     }
   }
 
@@ -45,10 +49,12 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
       LoadItemsEvent event, Emitter<MenuState> emit) async {
     emit(LoadingMenuState(items: state.items, categories: state.categories));
     try {
-      final items = await _menuRepository.loadAllItems();
+      final items = await _menuRepository.loadAllItems(limit: _pageLimit);
       emit(SuccessfulMenuState(items: items, categories: state.categories));
     } on Exception catch (e) {
       emit(ErrorMenuState(error: e));
+    } finally {
+      emit(IdleMenuState(categories: state.categories, items: state.items));
     }
   }
 
@@ -67,8 +73,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
         isSuccessful: false,
       ));
     } finally {
-      emit(SuccessfulMenuState(
-          items: state.items, categories: state.categories));
+      emit(IdleMenuState(categories: state.categories, items: state.items));
     }
   }
 }

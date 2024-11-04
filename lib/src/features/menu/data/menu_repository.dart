@@ -7,8 +7,9 @@ import 'package:coffee_shop/src/features/menu/models/menu_item.dart';
 import 'package:coffee_shop/src/features/menu/utils/menu_items_mapper.dart';
 
 abstract interface class IMenuRepository {
-  Future<List<MenuItem>> loadCategoryItems(MenuCategory category);
-  Future<List<MenuItem>> loadAllItems();
+  Future<List<MenuItem>> loadCategoryItems(
+      {required MenuCategory category, int page = 0, int limit = 25});
+  Future<List<MenuItem>> loadAllItems({int page = 0, int limit = 25});
   Future<bool> makeOrder(Map<String, int> orderMap);
 }
 
@@ -17,11 +18,15 @@ final class MenuRepository implements IMenuRepository {
   const MenuRepository({required IMenuDataSource networkMenuDataSource})
       : _networkMenuDataSource = networkMenuDataSource;
   @override
-  Future<List<MenuItem>> loadCategoryItems(MenuCategory category) async {
+  Future<List<MenuItem>> loadCategoryItems(
+      {required MenuCategory category, int page = 0, int limit = 25}) async {
     var dtos = <MenuItemDto>[];
     try {
       dtos = await _networkMenuDataSource.fetchMenuItems(
-          categoryId: category.id.toString());
+        categoryId: category.id.toString(),
+        page: page,
+        limit: limit,
+      );
     } on SocketException {
       //TODO: implement getting cached menu items from db
     }
@@ -29,11 +34,12 @@ final class MenuRepository implements IMenuRepository {
   }
 
   @override
-  Future<List<MenuItem>> loadAllItems() async {
+  Future<List<MenuItem>> loadAllItems({int page = 0, int limit = 25}) async {
     // return itemsMock;
     var dtos = <MenuItemDto>[];
     try {
-      dtos = await _networkMenuDataSource.fetchMenuItems();
+      dtos =
+          await _networkMenuDataSource.fetchMenuItems(page: page, limit: limit);
     } on SocketException {
       //TODO: implement getting cached menu items from db
     }

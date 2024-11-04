@@ -9,8 +9,8 @@ sealed class MenuState {
   });
 }
 
-final class InitialMenuState extends MenuState {
-  const InitialMenuState({
+final class IdleMenuState extends MenuState {
+  const IdleMenuState({
     super.items,
     super.categories,
   });
