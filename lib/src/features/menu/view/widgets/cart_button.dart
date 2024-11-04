@@ -1,7 +1,9 @@
+import 'package:coffee_shop/src/features/menu/providers/cart_provider.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/cart_bottom_sheet.dart';
 import 'package:coffee_shop/src/theme/app_colors.dart';
 import 'package:coffee_shop/src/theme/image_sources.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CartButton extends StatelessWidget {
   const CartButton({
@@ -13,13 +15,15 @@ class CartButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cartProvider = context.read<CartProvider>();
     return GestureDetector(
       onTap: () {
         showModalBottomSheet(
           barrierColor: Colors.transparent,
           isScrollControlled: true,
           context: context,
-          builder: (context) => const CartBottomSheet(),
+          builder: (context) => ChangeNotifierProvider.value(
+              value: cartProvider, child: const CartBottomSheet()),
         );
       },
       child: Padding(

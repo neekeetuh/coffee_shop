@@ -4,6 +4,7 @@ import 'package:coffee_shop/src/features/menu/data/data_sources/categories_data_
 import 'package:coffee_shop/src/features/menu/data/data_sources/menu_data_source.dart';
 import 'package:coffee_shop/src/features/menu/data/menu_repository.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
+import 'package:coffee_shop/src/features/menu/providers/cart_provider.dart';
 import 'package:coffee_shop/src/features/menu/providers/chosen_category_provider.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/cart_button.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/categories_choice_bar_sliver.dart';
@@ -60,6 +61,9 @@ class MenuScreen extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (_) => ChosenCategoryProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CartProvider(),
         )
       ],
       child: MultiRepositoryProvider(
@@ -128,9 +132,11 @@ class MenuScreenView extends StatelessWidget {
                         )
                       ],
                     ),
-                    const CartButton(
-                      price: 139,
-                    ),
+                    context.watch<CartProvider>().isNotEmpty()
+                        ? const CartButton(
+                            price: 139,
+                          )
+                        : const SizedBox.shrink(),
                   ],
                 ),
               );

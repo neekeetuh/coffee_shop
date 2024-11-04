@@ -1,7 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:coffee_shop/src/features/menu/providers/cart_provider.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/make_order_button.dart';
 import 'package:coffee_shop/src/theme/app_colors.dart';
 import 'package:coffee_shop/src/theme/image_sources.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CartBottomSheet extends StatelessWidget {
   const CartBottomSheet({
@@ -10,6 +13,7 @@ class CartBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cartProvier = context.watch<CartProvider>();
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -46,52 +50,66 @@ class CartBottomSheet extends StatelessWidget {
                   'Ваш заказ',
                   style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24),
                 ),
-                Image.asset(
-                  ImageSources.recycleBinIcon,
-                  height: 24,
-                  width: 24,
+                GestureDetector(
+                  onTap: () {
+                    context.read<CartProvider>().clearCart();
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(
+                    ImageSources.recycleBinIcon,
+                    height: 24,
+                    width: 24,
+                  ),
                 )
               ],
             ),
           ),
           Expanded(
             child: ListView.separated(
-              itemCount: 13,
-              itemBuilder: (context, index) => Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                height: 75,
-                child: Row(
-                  children: [
-                    Image.asset(
-                      ImageSources.coffeeTemplate,
-                      height: 55,
-                      width: 55,
-                    ),
-                    const Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Олеато',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text('139 p',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 16,
-                                )),
-                          ],
+              itemCount: cartProvier.items.length,
+              itemBuilder: (context, index) {
+                final item = cartProvier.items[index];
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  height: 75,
+                  child: Row(
+                    children: [
+                      CachedNetworkImage(
+                        height: 55,
+                        width: 55,
+                        imageUrl: item.image,
+                        errorWidget: (context, _, __) => Image.asset(
+                          ImageSources.coffeeDefault,
+                          height: 55,
+                          width: 55,
                         ),
                       ),
-                    )
-                  ],
-                ),
-              ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                item.title,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text('${item.price}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16,
+                                  )),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
               separatorBuilder: (BuildContext context, int index) {
                 return const SizedBox(
                   height: 10,
