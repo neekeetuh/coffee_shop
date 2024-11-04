@@ -9,6 +9,7 @@ import 'package:coffee_shop/src/features/menu/utils/menu_items_mapper.dart';
 abstract interface class IMenuRepository {
   Future<List<MenuItem>> loadCategoryItems(MenuCategory category);
   Future<List<MenuItem>> loadAllItems();
+  Future<bool> makeOrder(Map<String, int> orderMap);
 }
 
 final class MenuRepository implements IMenuRepository {
@@ -37,5 +38,10 @@ final class MenuRepository implements IMenuRepository {
       //TODO: implement getting cached menu items from db
     }
     return dtos.map((dto) => dto.toModel()).toList();
+  }
+
+  @override
+  Future<bool> makeOrder(Map<String, int> orderMap) async {
+    return _networkMenuDataSource.makeOrder(orderMap: orderMap);
   }
 }

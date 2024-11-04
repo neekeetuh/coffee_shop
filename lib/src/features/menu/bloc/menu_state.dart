@@ -38,3 +38,12 @@ final class ErrorMenuState extends MenuState {
     super.categories,
   });
 }
+
+final class OrderState extends MenuState {
+  final bool isSuccessful;
+  const OrderState({
+    required this.isSuccessful,
+    super.items,
+    super.categories,
+  });
+}

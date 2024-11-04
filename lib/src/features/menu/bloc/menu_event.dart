@@ -11,3 +11,8 @@ final class LoadCategoriesEvent extends MenuEvent {
 final class LoadItemsEvent extends MenuEvent {
   const LoadItemsEvent();
 }
+
+final class MakeOrderEvent extends MenuEvent {
+  final Map<String, int> orderMap;
+  const MakeOrderEvent({required this.orderMap});
+}

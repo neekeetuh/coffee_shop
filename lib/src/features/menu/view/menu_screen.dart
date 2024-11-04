@@ -133,8 +133,8 @@ class MenuScreenView extends StatelessWidget {
                       ],
                     ),
                     context.watch<CartProvider>().isNotEmpty()
-                        ? const CartButton(
-                            price: 139,
+                        ? CartButton(
+                            price: context.watch<CartProvider>().totalPrice,
                           )
                         : const SizedBox.shrink(),
                   ],

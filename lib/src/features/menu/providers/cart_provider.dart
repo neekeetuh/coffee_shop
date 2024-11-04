@@ -42,4 +42,12 @@ class CartProvider with ChangeNotifier {
     }
     return map;
   }
+
+  double get totalPrice {
+    double price = 0;
+    for (var item in items) {
+      price += item.price;
+    }
+    return price;
+  }
 }

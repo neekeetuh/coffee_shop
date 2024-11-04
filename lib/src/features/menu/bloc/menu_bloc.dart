@@ -24,6 +24,8 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
           await _onLoadCategoriesEvent(event, emit);
         case LoadItemsEvent():
           await _onLoadItemsEvent(event, emit);
+        case MakeOrderEvent():
+          await _onMakeOrderEvent(event, emit);
       }
     });
   }
@@ -47,6 +49,26 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
       emit(SuccessfulMenuState(items: items, categories: state.categories));
     } on Exception catch (e) {
       emit(ErrorMenuState(error: e));
+    }
+  }
+
+  Future<void> _onMakeOrderEvent(
+      MakeOrderEvent event, Emitter<MenuState> emit) async {
+    try {
+      final orderStatus = await _menuRepository.makeOrder(event.orderMap);
+      emit(OrderState(
+          items: state.items,
+          categories: state.categories,
+          isSuccessful: orderStatus));
+    } on Exception {
+      emit(OrderState(
+        items: state.items,
+        categories: state.categories,
+        isSuccessful: false,
+      ));
+    } finally {
+      emit(SuccessfulMenuState(
+          items: state.items, categories: state.categories));
     }
   }
 }
