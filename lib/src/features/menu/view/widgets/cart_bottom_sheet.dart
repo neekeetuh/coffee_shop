@@ -97,7 +97,7 @@ class CartBottomSheet extends StatelessWidget {
                                   fontSize: 16,
                                 ),
                               ),
-                              Text('${item.price}',
+                              Text('${item.price} Р',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 16,
