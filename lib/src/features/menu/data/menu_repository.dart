@@ -30,12 +30,11 @@ final class MenuRepository implements IMenuRepository {
     } on SocketException {
       //TODO: implement getting cached menu items from db
     }
-    return dtos as List<MenuItem>;
+    return dtos.map((dto) => dto.toModel()).toList();
   }
 
   @override
   Future<List<MenuItem>> loadAllItems({int page = 0, int limit = 25}) async {
-    // return itemsMock;
     var dtos = <MenuItemDto>[];
     try {
       dtos =

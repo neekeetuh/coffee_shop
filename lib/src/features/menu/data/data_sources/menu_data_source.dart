@@ -15,7 +15,7 @@ final class NetworkMenuDataSource implements IMenuDataSource {
   Future<List<MenuItemDto>> fetchMenuItems(
       {String categoryId = '0', int page = 0, int limit = 25}) async {
     final response = await dio.get(
-        'https://coffeeshop.academy.effective.band/api/v1/products/?category=$categoryId&=$page&limit=$limit');
+        'https://coffeeshop.academy.effective.band/api/v1/products/?category=$categoryId&page=$page&limit=$limit');
     final data = response.data as Map<String, dynamic>;
     final menuItemsDtosListData = data['data'] as List<dynamic>;
     final menuItemsDtosList = menuItemsDtosListData

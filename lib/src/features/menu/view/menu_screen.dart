@@ -94,16 +94,15 @@ class MenuScreenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.read<MenuBloc>().add(const LoadCategoriesEvent());
-    context.read<MenuBloc>().add(const LoadItemsEvent());
     return Scaffold(
       body: SafeArea(
-        child: BlocBuilder<MenuBloc, MenuState>(
-          builder: (context, state) {
-            if (state is LoadingMenuState) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+        child: BlocConsumer<MenuBloc, MenuState>(
+          listener: (context, state) {
+            if (state is IdleMenuState && state.items == null) {
+              context.read<MenuBloc>().add(const LoadItemsEvent());
             }
+          },
+          builder: (context, state) {
             final List<MenuCategory> categories = state.categories ?? [];
             categoriesSectionsKeys = List<GlobalKey>.generate(categories.length,
                 (index) => GlobalKey(debugLabel: index.toString()));
@@ -122,6 +121,10 @@ class MenuScreenView extends StatelessWidget {
                             ?.where(
                                 (item) => item.category.id == categories[i].id)
                             .toList();
+                        if (items?.isEmpty ?? true) {
+                          return const SliverToBoxAdapter(
+                              child: SizedBox.shrink());
+                        }
                         return CategorySectionSliver(
                           key: categoriesSectionsKeys[i],
                           category: categories[i],
@@ -132,7 +135,14 @@ class MenuScreenView extends StatelessWidget {
                         child: SizedBox(
                           height: 16,
                         ),
-                      )
+                      ),
+                      if (state is LoadingMenuState) ...[
+                        const SliverToBoxAdapter(
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      ]
                     ],
                   ),
                   context.watch<CartProvider>().isNotEmpty()
@@ -175,6 +185,9 @@ class MenuScreenView extends StatelessWidget {
             .read<ChosenCategoryProvider>()
             .setChosenIndex(firstVisibleSectionIndex + 1);
         ensureVIsibleByKey(key: categoriesKeys[firstVisibleSectionIndex + 1]);
+      }
+      if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+        context.read<MenuBloc>().add(const LoadItemsEvent());
       }
     }
     return false;
