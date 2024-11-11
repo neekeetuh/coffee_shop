@@ -50,6 +50,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
 
   Future<void> _onLoadItemsEvent(
       LoadItemsEvent event, Emitter<MenuState> emit) async {
+    if (state is LoadingMenuState) return;
     if (_currentPaginatedCategoryIndex > state.categories!.length - 1) return;
     if (state.categories?[_currentPaginatedCategoryIndex] == null) return;
     emit(LoadingMenuState(items: state.items, categories: state.categories));

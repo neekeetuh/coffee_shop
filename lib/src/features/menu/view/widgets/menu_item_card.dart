@@ -46,6 +46,7 @@ class MenuItemCard extends StatelessWidget {
                 item.title,
                 style:
                     const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             context.watch<CartProvider>().amountOfItem(item) == 0
