@@ -186,9 +186,6 @@ class MenuScreenView extends StatelessWidget {
             .setChosenIndex(firstVisibleSectionIndex + 1);
         ensureVIsibleByKey(key: categoriesKeys[firstVisibleSectionIndex + 1]);
       }
-      if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-        context.read<MenuBloc>().add(const LoadItemsEvent());
-      }
     }
     return false;
   }

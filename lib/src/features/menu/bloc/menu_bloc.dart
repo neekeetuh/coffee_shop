@@ -32,9 +32,6 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     });
   }
 
-  int _currentPage = 0;
-  int _currentPaginatedCategoryIndex = 0;
-
   Future<void> _onLoadCategoriesEvent(
       LoadCategoriesEvent event, Emitter<MenuState> emit) async {
     emit(LoadingMenuState(items: state.items, categories: state.categories));
@@ -50,22 +47,19 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
 
   Future<void> _onLoadItemsEvent(
       LoadItemsEvent event, Emitter<MenuState> emit) async {
-    if (state is LoadingMenuState) return;
-    if (_currentPaginatedCategoryIndex > state.categories!.length - 1) return;
-    if (state.categories?[_currentPaginatedCategoryIndex] == null) return;
     emit(LoadingMenuState(items: state.items, categories: state.categories));
     try {
-      final items = await _menuRepository.loadCategoryItems(
-          category: state.categories![_currentPaginatedCategoryIndex],
-          page: _currentPage,
-          limit: _pageLimit);
-      _currentPage++;
-      if (items.length < _pageLimit) {
-        _currentPage = 0;
-        _currentPaginatedCategoryIndex++;
+      int currentPage = 0;
+      var allItems = state.items ?? [];
+      for (var category in state.categories ?? []) {
+        final items = await _menuRepository.loadCategoryItems(
+            category: category, page: currentPage, limit: _pageLimit);
+        currentPage++;
+        if (items.length < _pageLimit) {
+          currentPage = 0;
+        }
+        allItems.addAll(items);
       }
-      final allItems = state.items ?? [];
-      allItems.addAll(items);
       emit(SuccessfulMenuState(items: allItems, categories: state.categories));
     } on Exception catch (e) {
       emit(ErrorMenuState(error: e));
