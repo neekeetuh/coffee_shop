@@ -8,7 +8,7 @@ class PriceButton extends StatelessWidget {
     required this.onPressed,
   });
 
-  final int price;
+  final double price;
   final void Function() onPressed;
 
   @override

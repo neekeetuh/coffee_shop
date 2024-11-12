@@ -1,10 +1,15 @@
 import 'package:coffee_shop/src/features/menu/bloc/menu_bloc.dart';
 import 'package:coffee_shop/src/features/menu/data/category_repository.dart';
+import 'package:coffee_shop/src/features/menu/data/data_sources/categories_data_source.dart';
+import 'package:coffee_shop/src/features/menu/data/data_sources/menu_data_source.dart';
 import 'package:coffee_shop/src/features/menu/data/menu_repository.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
+import 'package:coffee_shop/src/features/menu/providers/cart_provider.dart';
 import 'package:coffee_shop/src/features/menu/providers/chosen_category_provider.dart';
+import 'package:coffee_shop/src/features/menu/view/widgets/cart_button.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/categories_choice_bar_sliver.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/category_section_sliver.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -44,6 +49,9 @@ void ensureVIsibleByKey({
   }
 }
 
+//TODO: initialize using di container
+final dio = Dio();
+
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
 
@@ -53,12 +61,20 @@ class MenuScreen extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (_) => ChosenCategoryProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CartProvider(),
         )
       ],
       child: MultiRepositoryProvider(
         providers: [
-          RepositoryProvider(create: (context) => const CategoryRepository()),
-          RepositoryProvider(create: (context) => const MenuRepository()),
+          RepositoryProvider(
+              create: (context) => CategoryRepository(
+                  networkCategoriesDataSource:
+                      NetworkCategoriesDataSource(dio: dio))),
+          RepositoryProvider(
+              create: (context) => MenuRepository(
+                  networkMenuDataSource: NetworkMenuDataSource(dio: dio))),
         ],
         child: BlocProvider(
           create: (context) => MenuBloc(
@@ -78,44 +94,64 @@ class MenuScreenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.read<MenuBloc>().add(const LoadCategoriesEvent());
-    context.read<MenuBloc>().add(const LoadItemsEvent());
     return Scaffold(
       body: SafeArea(
-        child: BlocBuilder<MenuBloc, MenuState>(
-          builder: (context, state) {
-            if (state is SuccessfulMenuState) {
-              final List<MenuCategory> categories = state.categories ?? [];
-              categoriesSectionsKeys = List<GlobalKey>.generate(
-                  categories.length,
-                  (index) => GlobalKey(debugLabel: index.toString()));
-              return NotificationListener<ScrollNotification>(
-                onNotification: (ScrollNotification scrollInfo) =>
-                    _onScrollNotification(context, scrollInfo),
-                child: CustomScrollView(
-                  slivers: [
-                    CategoriesChoiceBarSliver(
-                        key: appBarKey, categories: categories),
-                    ...List.generate(
-                        categories.length,
-                        (int i) => CategorySectionSliver(
-                              key: categoriesSectionsKeys[i],
-                              category: categories[i],
-                              items: state.items!
-                                  .where(
-                                      (item) => item.category == categories[i])
-                                  .toList(),
-                            )),
-                    const SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: 16,
-                      ),
-                    )
-                  ],
-                ),
-              );
+        child: BlocConsumer<MenuBloc, MenuState>(
+          listener: (context, state) {
+            if (state is IdleMenuState && state.items == null) {
+              context.read<MenuBloc>().add(const LoadItemsEvent());
             }
-            return const Center(
-              child: CircularProgressIndicator(),
+          },
+          builder: (context, state) {
+            final List<MenuCategory> categories = state.categories ?? [];
+            categoriesSectionsKeys = List<GlobalKey>.generate(categories.length,
+                (index) => GlobalKey(debugLabel: index.toString()));
+            return NotificationListener<ScrollNotification>(
+              onNotification: (ScrollNotification scrollInfo) =>
+                  _onScrollNotification(context, scrollInfo),
+              child: Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  CustomScrollView(
+                    slivers: [
+                      CategoriesChoiceBarSliver(
+                          key: appBarKey, categories: categories),
+                      ...List.generate(categories.length, (int i) {
+                        final items = state.items
+                            ?.where(
+                                (item) => item.category.id == categories[i].id)
+                            .toList();
+                        if (items?.isEmpty ?? true) {
+                          return const SliverToBoxAdapter(
+                              child: SizedBox.shrink());
+                        }
+                        return CategorySectionSliver(
+                          key: categoriesSectionsKeys[i],
+                          category: categories[i],
+                          items: items ?? [],
+                        );
+                      }),
+                      const SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: 16,
+                        ),
+                      ),
+                      if (state is LoadingMenuState) ...[
+                        const SliverToBoxAdapter(
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      ]
+                    ],
+                  ),
+                  context.watch<CartProvider>().isNotEmpty()
+                      ? CartButton(
+                          price: context.watch<CartProvider>().totalPrice,
+                        )
+                      : const SizedBox.shrink(),
+                ],
+              ),
             );
           },
         ),

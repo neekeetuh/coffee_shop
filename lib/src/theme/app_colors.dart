@@ -6,4 +6,5 @@ sealed class AppColors {
   static const backgroundColor = Color.fromRGBO(247, 250, 248, 1);
   static const white = Colors.white;
   static const black = Colors.black;
+  static const grey = Color.fromRGBO(229, 229, 229, 1);
 }
