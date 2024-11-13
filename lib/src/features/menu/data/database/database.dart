@@ -1,5 +1,6 @@
 import 'package:coffee_shop/src/features/menu/models/dto/menu_category_dto.dart';
 import 'package:coffee_shop/src/features/menu/models/dto/menu_item_dto.dart';
+import 'package:coffee_shop/src/features/menu/models/dto/menu_item_with_category_db_dto.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
@@ -9,7 +10,7 @@ part 'tables.dart';
 abstract interface class IMenuDb {
   Future<List<MenuCategoryDbDto>> fetchCategories();
   Future<void> insertCategories(List<MenuCategoryDbDto> categories);
-  Future<List<MenuItemDbDto>> fetchMenuItems(
+  Future<List<MenuItemWithCategoryDbDto>> fetchMenuItems(
       int categoryId, int page, int pageLimit);
   Future<void> insertMenuItems(List<MenuItemDbDto> items);
 }
@@ -43,12 +44,21 @@ class MenuDatabase extends _$MenuDatabase implements IMenuDb {
   }
 
   @override
-  Future<List<MenuItemDbDto>> fetchMenuItems(
+  Future<List<MenuItemWithCategoryDbDto>> fetchMenuItems(
       int categoryId, int page, int pageLimit) async {
-    return (select(menuItems)
+    final query = (select(menuItems)
           ..where((item) => item.categoryId.equals(categoryId))
           ..where((item) => item.page.equals(page))
           ..where((item) => item.pageLimit.equals(pageLimit)))
+        .join([
+      innerJoin(
+          menuCategories, menuCategories.id.equalsExp(menuItems.categoryId))
+    ]);
+    return query
+        .map((row) => MenuItemWithCategoryDbDto(
+              menuItemDbDto: row.readTable(menuItems),
+              menuCategoryDbDto: row.readTable(menuCategories),
+            ))
         .get();
   }
 

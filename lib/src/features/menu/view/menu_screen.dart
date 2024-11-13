@@ -127,7 +127,7 @@ class MenuScreenView extends StatelessWidget {
                       ...List.generate(categories.length, (int i) {
                         final items = state.items
                             ?.where(
-                                (item) => item.categoryId == categories[i].id)
+                                (item) => item.category.id == categories[i].id)
                             .toList();
                         if (items?.isEmpty ?? true) {
                           return const SliverToBoxAdapter(
