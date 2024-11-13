@@ -2,6 +2,9 @@ import 'package:coffee_shop/src/features/menu/bloc/menu_bloc.dart';
 import 'package:coffee_shop/src/features/menu/data/category_repository.dart';
 import 'package:coffee_shop/src/features/menu/data/data_sources/categories_data_source.dart';
 import 'package:coffee_shop/src/features/menu/data/data_sources/menu_data_source.dart';
+import 'package:coffee_shop/src/features/menu/data/data_sources/savable_categories_data_source.dart';
+import 'package:coffee_shop/src/features/menu/data/data_sources/savable_menu_data_source.dart';
+import 'package:coffee_shop/src/features/menu/data/database/database.dart';
 import 'package:coffee_shop/src/features/menu/data/menu_repository.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
 import 'package:coffee_shop/src/features/menu/providers/cart_provider.dart';
@@ -70,11 +73,16 @@ class MenuScreen extends StatelessWidget {
         providers: [
           RepositoryProvider(
               create: (context) => CategoryRepository(
-                  networkCategoriesDataSource:
-                      NetworkCategoriesDataSource(dio: dio))),
+                    networkCategoriesDataSource:
+                        NetworkCategoriesDataSource(dio: dio),
+                    dbCategoriesDataSource: DbCategoriesDataSource(
+                        menuDb: context.read<MenuDatabase>()),
+                  )),
           RepositoryProvider(
               create: (context) => MenuRepository(
-                  networkMenuDataSource: NetworkMenuDataSource(dio: dio))),
+                  networkMenuDataSource: NetworkMenuDataSource(dio: dio),
+                  dbMenuItemsDataSource:
+                      DbMenuDataSource(menuDb: context.read<MenuDatabase>()))),
         ],
         child: BlocProvider(
           create: (context) => MenuBloc(
@@ -119,7 +127,7 @@ class MenuScreenView extends StatelessWidget {
                       ...List.generate(categories.length, (int i) {
                         final items = state.items
                             ?.where(
-                                (item) => item.category.id == categories[i].id)
+                                (item) => item.categoryId == categories[i].id)
                             .toList();
                         if (items?.isEmpty ?? true) {
                           return const SliverToBoxAdapter(
