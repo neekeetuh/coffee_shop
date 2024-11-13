@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:coffee_shop/src/features/menu/data/data_sources/categories_data_source.dart';
 import 'package:coffee_shop/src/features/menu/data/data_sources/savable_categories_data_source.dart';
 import 'package:coffee_shop/src/features/menu/data/database/database.dart';
@@ -25,7 +27,7 @@ final class CategoryRepository implements ICategoryRepository {
       final dbDtos = dtos.map((dto) => dto.toDbDto()).toList();
       _dbCategoriesDataSource.saveCategories(categories: dbDtos);
       return dtos.map((dto) => dto.toModel()).toList();
-    } on Exception {
+    } on SocketException {
       final dbDtos = await _dbCategoriesDataSource.fetchCategories()
           as List<MenuCategoryDbDto>;
       return dbDtos.map((dto) => dto.toModel()).toList();

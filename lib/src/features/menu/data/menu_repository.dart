@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:coffee_shop/src/features/menu/data/data_sources/menu_data_source.dart';
 import 'package:coffee_shop/src/features/menu/data/data_sources/savable_menu_data_source.dart';
 import 'package:coffee_shop/src/features/menu/data/database/database.dart';
@@ -32,7 +34,7 @@ final class MenuRepository implements IMenuRepository {
       final dbDtos = dtos.map((dto) => dto.toDbDto(page, limit)).toList();
       _dbMenuItemsDataSource.saveMenuItems(items: dbDtos);
       return dtos.map((dto) => dto.toModel()).toList();
-    } on Exception {
+    } on SocketException {
       final dbDtos = await _dbMenuItemsDataSource.fetchMenuItems(
           categoryId: category.id.toString(),
           page: page,

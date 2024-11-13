@@ -5,7 +5,9 @@ import 'package:provider/provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(Provider(
-      create: (BuildContext context) => MenuDatabase(),
-      child: const CoffeeShopApp()));
+  runApp(Provider<MenuDatabase>(
+    create: (BuildContext context) => MenuDatabase(),
+    child: const CoffeeShopApp(),
+    dispose: (context, db) => db.close(),
+  ));
 }
