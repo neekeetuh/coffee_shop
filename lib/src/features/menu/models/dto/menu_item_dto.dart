@@ -4,8 +4,10 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'menu_item_dto.g.dart';
 
+abstract interface class IMenuItemDto {}
+
 @JsonSerializable(explicitToJson: true)
-class MenuItemDto {
+class MenuItemDto implements IMenuItemDto {
   const MenuItemDto(this.id, this.name, this.description, this.category,
       this.imageUrl, this.prices);
   final int id;

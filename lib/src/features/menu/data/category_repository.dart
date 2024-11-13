@@ -18,7 +18,8 @@ final class CategoryRepository implements ICategoryRepository {
   Future<List<MenuCategory>> loadCategories() async {
     var dtos = <MenuCategoryDto>[];
     try {
-      dtos = await _networkCategoriesDataSource.fetchCategories();
+      dtos = await _networkCategoriesDataSource.fetchCategories()
+          as List<MenuCategoryDto>;
     } on SocketException {
       //TODO: implement getting cached categories from db
     }

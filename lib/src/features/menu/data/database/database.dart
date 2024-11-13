@@ -1,11 +1,21 @@
+import 'package:coffee_shop/src/features/menu/models/dto/menu_category_dto.dart';
+import 'package:coffee_shop/src/features/menu/models/dto/menu_item_dto.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
 part 'database.g.dart';
 part 'tables.dart';
 
+abstract interface class IMenuDb {
+  Future<List<MenuCategoryDbDto>> fetchCategories();
+  Future<void> insertCategories(List<MenuCategoryDbDto> categories);
+  Future<List<MenuItemDbDto>> fetchMenuItems(
+      int categoryId, int page, int pageLimit);
+  Future<void> insertMenuItems(List<MenuItemDbDto> items);
+}
+
 @DriftDatabase(tables: [MenuCategories, MenuItems])
-class MenuDatabase extends _$MenuDatabase {
+class MenuDatabase extends _$MenuDatabase implements IMenuDb {
   MenuDatabase() : super(_openConnection());
 
   @override
@@ -15,10 +25,12 @@ class MenuDatabase extends _$MenuDatabase {
     return driftDatabase(name: 'coffee_shop_db');
   }
 
+  @override
   Future<List<MenuCategoryDbDto>> fetchCategories() async {
     return select(menuCategories).get();
   }
 
+  @override
   Future<void> insertCategories(List<MenuCategoryDbDto> categories) async {
     await batch((batch) {
       batch.insertAllOnConflictUpdate(
@@ -30,6 +42,7 @@ class MenuDatabase extends _$MenuDatabase {
     });
   }
 
+  @override
   Future<List<MenuItemDbDto>> fetchMenuItems(
       int categoryId, int page, int pageLimit) async {
     return (select(menuItems)
@@ -39,6 +52,7 @@ class MenuDatabase extends _$MenuDatabase {
         .get();
   }
 
+  @override
   Future<void> insertMenuItems(List<MenuItemDbDto> items) async {
     await batch((batch) {
       batch.insertAllOnConflictUpdate(

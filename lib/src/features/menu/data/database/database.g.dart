@@ -63,7 +63,7 @@ class $MenuCategoriesTable extends MenuCategories
 }
 
 class MenuCategoryDbDto extends DataClass
-    implements Insertable<MenuCategoryDbDto> {
+    implements Insertable<MenuCategoryDbDto>, IMenuCategoryDto {
   final int id;
   final String title;
   const MenuCategoryDbDto({required this.id, required this.title});
@@ -313,7 +313,8 @@ class $MenuItemsTable extends MenuItems
   }
 }
 
-class MenuItemDbDto extends DataClass implements Insertable<MenuItemDbDto> {
+class MenuItemDbDto extends DataClass
+    implements Insertable<MenuItemDbDto>, IMenuItemDto {
   final int id;
   final String title;
   final String image;

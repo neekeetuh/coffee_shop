@@ -14,8 +14,8 @@ abstract interface class IMenuRepository {
 }
 
 final class MenuRepository implements IMenuRepository {
-  final IMenuDataSource _networkMenuDataSource;
-  const MenuRepository({required IMenuDataSource networkMenuDataSource})
+  final INetworkMenuDataSource _networkMenuDataSource;
+  const MenuRepository({required INetworkMenuDataSource networkMenuDataSource})
       : _networkMenuDataSource = networkMenuDataSource;
   @override
   Future<List<MenuItem>> loadCategoryItems(
@@ -26,7 +26,7 @@ final class MenuRepository implements IMenuRepository {
         categoryId: category.id.toString(),
         page: page,
         limit: limit,
-      );
+      ) as List<MenuItemDto>;
     } on SocketException {
       //TODO: implement getting cached menu items from db
     }
@@ -37,8 +37,8 @@ final class MenuRepository implements IMenuRepository {
   Future<List<MenuItem>> loadAllItems({int page = 0, int limit = 25}) async {
     var dtos = <MenuItemDto>[];
     try {
-      dtos =
-          await _networkMenuDataSource.fetchMenuItems(page: page, limit: limit);
+      dtos = await _networkMenuDataSource.fetchMenuItems(
+          page: page, limit: limit) as List<MenuItemDto>;
     } on SocketException {
       //TODO: implement getting cached menu items from db
     }

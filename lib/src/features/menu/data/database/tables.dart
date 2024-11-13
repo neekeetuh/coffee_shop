@@ -1,6 +1,6 @@
 part of 'database.dart';
 
-@DataClassName('MenuCategoryDbDto')
+@DataClassName('MenuCategoryDbDto', implementing: [IMenuCategoryDto])
 class MenuCategories extends Table {
   IntColumn get id => integer()();
   TextColumn get title => text()();
@@ -9,7 +9,7 @@ class MenuCategories extends Table {
   Set<Column<Object>>? get primaryKey => {id};
 }
 
-@DataClassName('MenuItemDbDto')
+@DataClassName('MenuItemDbDto', implementing: [IMenuItemDto])
 class MenuItems extends Table {
   IntColumn get id => integer()();
   TextColumn get title => text()();
