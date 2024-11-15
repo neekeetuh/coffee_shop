@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:coffee_shop/src/features/menu/data/data_sources/categories_data_source.dart';
 import 'package:coffee_shop/src/features/menu/data/data_sources/savable_categories_data_source.dart';
-import 'package:coffee_shop/src/features/menu/data/database/database.dart';
 import 'package:coffee_shop/src/features/menu/models/dto/menu_category_dto.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
 import 'package:coffee_shop/src/features/menu/utils/category_mapper.dart';
@@ -21,16 +20,13 @@ final class CategoryRepository implements ICategoryRepository {
         _networkCategoriesDataSource = networkCategoriesDataSource;
   @override
   Future<List<MenuCategory>> loadCategories() async {
+    var dtos = <MenuCategoryDto>[];
     try {
-      final dtos = await _networkCategoriesDataSource.fetchCategories()
-          as List<MenuCategoryDto>;
-      final dbDtos = dtos.map((dto) => dto.toDbDto()).toList();
-      _dbCategoriesDataSource.saveCategories(categories: dbDtos);
-      return dtos.map((dto) => dto.toModel()).toList();
+      dtos = await _networkCategoriesDataSource.fetchCategories();
+      _dbCategoriesDataSource.saveCategories(categories: dtos);
     } on SocketException {
-      final dbDtos = await _dbCategoriesDataSource.fetchCategories()
-          as List<MenuCategoryDbDto>;
-      return dbDtos.map((dto) => dto.toModel()).toList();
+      dtos = await _dbCategoriesDataSource.fetchCategories();
     }
+    return dtos.map((dto) => dto.toModel()).toList();
   }
 }

@@ -4,7 +4,7 @@ part of 'database.dart';
 
 // ignore_for_file: type=lint
 class $MenuCategoriesTable extends MenuCategories
-    with TableInfo<$MenuCategoriesTable, MenuCategoryDbDto> {
+    with TableInfo<$MenuCategoriesTable, MenuCategoryDataClass> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -27,7 +27,8 @@ class $MenuCategoriesTable extends MenuCategories
   String get actualTableName => $name;
   static const String $name = 'menu_categories';
   @override
-  VerificationContext validateIntegrity(Insertable<MenuCategoryDbDto> instance,
+  VerificationContext validateIntegrity(
+      Insertable<MenuCategoryDataClass> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -46,9 +47,9 @@ class $MenuCategoriesTable extends MenuCategories
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  MenuCategoryDbDto map(Map<String, dynamic> data, {String? tablePrefix}) {
+  MenuCategoryDataClass map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MenuCategoryDbDto(
+    return MenuCategoryDataClass(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       title: attachedDatabase.typeMapping
@@ -62,11 +63,11 @@ class $MenuCategoriesTable extends MenuCategories
   }
 }
 
-class MenuCategoryDbDto extends DataClass
-    implements Insertable<MenuCategoryDbDto>, IMenuCategoryDto {
+class MenuCategoryDataClass extends DataClass
+    implements Insertable<MenuCategoryDataClass> {
   final int id;
   final String title;
-  const MenuCategoryDbDto({required this.id, required this.title});
+  const MenuCategoryDataClass({required this.id, required this.title});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -82,10 +83,10 @@ class MenuCategoryDbDto extends DataClass
     );
   }
 
-  factory MenuCategoryDbDto.fromJson(Map<String, dynamic> json,
+  factory MenuCategoryDataClass.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return MenuCategoryDbDto(
+    return MenuCategoryDataClass(
       id: serializer.fromJson<int>(json['id']),
       title: serializer.fromJson<String>(json['title']),
     );
@@ -99,12 +100,13 @@ class MenuCategoryDbDto extends DataClass
     };
   }
 
-  MenuCategoryDbDto copyWith({int? id, String? title}) => MenuCategoryDbDto(
+  MenuCategoryDataClass copyWith({int? id, String? title}) =>
+      MenuCategoryDataClass(
         id: id ?? this.id,
         title: title ?? this.title,
       );
-  MenuCategoryDbDto copyWithCompanion(MenuCategoriesCompanion data) {
-    return MenuCategoryDbDto(
+  MenuCategoryDataClass copyWithCompanion(MenuCategoriesCompanion data) {
+    return MenuCategoryDataClass(
       id: data.id.present ? data.id.value : this.id,
       title: data.title.present ? data.title.value : this.title,
     );
@@ -112,7 +114,7 @@ class MenuCategoryDbDto extends DataClass
 
   @override
   String toString() {
-    return (StringBuffer('MenuCategoryDbDto(')
+    return (StringBuffer('MenuCategoryDataClass(')
           ..write('id: $id, ')
           ..write('title: $title')
           ..write(')'))
@@ -124,12 +126,12 @@ class MenuCategoryDbDto extends DataClass
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is MenuCategoryDbDto &&
+      (other is MenuCategoryDataClass &&
           other.id == this.id &&
           other.title == this.title);
 }
 
-class MenuCategoriesCompanion extends UpdateCompanion<MenuCategoryDbDto> {
+class MenuCategoriesCompanion extends UpdateCompanion<MenuCategoryDataClass> {
   final Value<int> id;
   final Value<String> title;
   const MenuCategoriesCompanion({
@@ -140,7 +142,7 @@ class MenuCategoriesCompanion extends UpdateCompanion<MenuCategoryDbDto> {
     this.id = const Value.absent(),
     required String title,
   }) : title = Value(title);
-  static Insertable<MenuCategoryDbDto> custom({
+  static Insertable<MenuCategoryDataClass> custom({
     Expression<int>? id,
     Expression<String>? title,
   }) {
@@ -180,7 +182,7 @@ class MenuCategoriesCompanion extends UpdateCompanion<MenuCategoryDbDto> {
 }
 
 class $MenuItemsTable extends MenuItems
-    with TableInfo<$MenuItemsTable, MenuItemDbDto> {
+    with TableInfo<$MenuItemsTable, MenuItemDataClass> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -189,11 +191,17 @@ class $MenuItemsTable extends MenuItems
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: false);
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
       'title', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _imageMeta = const VerificationMeta('image');
   @override
@@ -202,9 +210,10 @@ class $MenuItemsTable extends MenuItems
       type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _priceMeta = const VerificationMeta('price');
   @override
-  late final GeneratedColumn<double> price = GeneratedColumn<double>(
-      'price', aliasedName, false,
-      type: DriftSqlType.double, requiredDuringInsert: true);
+  late final GeneratedColumnWithTypeConverter<PriceDto, String> price =
+      GeneratedColumn<String>('price', aliasedName, false,
+              type: DriftSqlType.string, requiredDuringInsert: true)
+          .withConverter<PriceDto>($MenuItemsTable.$converterprice);
   static const VerificationMeta _categoryIdMeta =
       const VerificationMeta('categoryId');
   @override
@@ -214,34 +223,21 @@ class $MenuItemsTable extends MenuItems
       requiredDuringInsert: true,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES menu_categories (id)'));
-  static const VerificationMeta _pageMeta = const VerificationMeta('page');
-  @override
-  late final GeneratedColumn<int> page = GeneratedColumn<int>(
-      'page', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _pageLimitMeta =
-      const VerificationMeta('pageLimit');
-  @override
-  late final GeneratedColumn<int> pageLimit = GeneratedColumn<int>(
-      'page_limit', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, title, image, price, categoryId, page, pageLimit];
+      [id, title, description, image, price, categoryId];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'menu_items';
   @override
-  VerificationContext validateIntegrity(Insertable<MenuItemDbDto> instance,
+  VerificationContext validateIntegrity(Insertable<MenuItemDataClass> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
     }
     if (data.containsKey('title')) {
       context.handle(
@@ -249,18 +245,21 @@ class $MenuItemsTable extends MenuItems
     } else if (isInserting) {
       context.missing(_titleMeta);
     }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
     if (data.containsKey('image')) {
       context.handle(
           _imageMeta, image.isAcceptableOrUnknown(data['image']!, _imageMeta));
     } else if (isInserting) {
       context.missing(_imageMeta);
     }
-    if (data.containsKey('price')) {
-      context.handle(
-          _priceMeta, price.isAcceptableOrUnknown(data['price']!, _priceMeta));
-    } else if (isInserting) {
-      context.missing(_priceMeta);
-    }
+    context.handle(_priceMeta, const VerificationResult.success());
     if (data.containsKey('category_id')) {
       context.handle(
           _categoryIdMeta,
@@ -269,41 +268,28 @@ class $MenuItemsTable extends MenuItems
     } else if (isInserting) {
       context.missing(_categoryIdMeta);
     }
-    if (data.containsKey('page')) {
-      context.handle(
-          _pageMeta, page.isAcceptableOrUnknown(data['page']!, _pageMeta));
-    } else if (isInserting) {
-      context.missing(_pageMeta);
-    }
-    if (data.containsKey('page_limit')) {
-      context.handle(_pageLimitMeta,
-          pageLimit.isAcceptableOrUnknown(data['page_limit']!, _pageLimitMeta));
-    } else if (isInserting) {
-      context.missing(_pageLimitMeta);
-    }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id, page, pageLimit};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  MenuItemDbDto map(Map<String, dynamic> data, {String? tablePrefix}) {
+  MenuItemDataClass map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MenuItemDbDto(
+    return MenuItemDataClass(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       title: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
       image: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}image'])!,
-      price: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}price'])!,
+      price: $MenuItemsTable.$converterprice.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}price'])!),
       categoryId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}category_id'])!,
-      page: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}page'])!,
-      pageLimit: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}page_limit'])!,
     );
   }
 
@@ -311,35 +297,38 @@ class $MenuItemsTable extends MenuItems
   $MenuItemsTable createAlias(String alias) {
     return $MenuItemsTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<PriceDto, String, String> $converterprice =
+      PriceDto.converter;
 }
 
-class MenuItemDbDto extends DataClass
-    implements Insertable<MenuItemDbDto>, IMenuItemDto {
+class MenuItemDataClass extends DataClass
+    implements Insertable<MenuItemDataClass> {
   final int id;
   final String title;
+  final String description;
   final String image;
-  final double price;
+  final PriceDto price;
   final int categoryId;
-  final int page;
-  final int pageLimit;
-  const MenuItemDbDto(
+  const MenuItemDataClass(
       {required this.id,
       required this.title,
+      required this.description,
       required this.image,
       required this.price,
-      required this.categoryId,
-      required this.page,
-      required this.pageLimit});
+      required this.categoryId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['title'] = Variable<String>(title);
+    map['description'] = Variable<String>(description);
     map['image'] = Variable<String>(image);
-    map['price'] = Variable<double>(price);
+    {
+      map['price'] =
+          Variable<String>($MenuItemsTable.$converterprice.toSql(price));
+    }
     map['category_id'] = Variable<int>(categoryId);
-    map['page'] = Variable<int>(page);
-    map['page_limit'] = Variable<int>(pageLimit);
     return map;
   }
 
@@ -347,25 +336,24 @@ class MenuItemDbDto extends DataClass
     return MenuItemsCompanion(
       id: Value(id),
       title: Value(title),
+      description: Value(description),
       image: Value(image),
       price: Value(price),
       categoryId: Value(categoryId),
-      page: Value(page),
-      pageLimit: Value(pageLimit),
     );
   }
 
-  factory MenuItemDbDto.fromJson(Map<String, dynamic> json,
+  factory MenuItemDataClass.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return MenuItemDbDto(
+    return MenuItemDataClass(
       id: serializer.fromJson<int>(json['id']),
       title: serializer.fromJson<String>(json['title']),
+      description: serializer.fromJson<String>(json['description']),
       image: serializer.fromJson<String>(json['image']),
-      price: serializer.fromJson<double>(json['price']),
+      price: $MenuItemsTable.$converterprice
+          .fromJson(serializer.fromJson<String>(json['price'])),
       categoryId: serializer.fromJson<int>(json['categoryId']),
-      page: serializer.fromJson<int>(json['page']),
-      pageLimit: serializer.fromJson<int>(json['pageLimit']),
     );
   }
   @override
@@ -374,149 +362,129 @@ class MenuItemDbDto extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'title': serializer.toJson<String>(title),
+      'description': serializer.toJson<String>(description),
       'image': serializer.toJson<String>(image),
-      'price': serializer.toJson<double>(price),
+      'price': serializer
+          .toJson<String>($MenuItemsTable.$converterprice.toJson(price)),
       'categoryId': serializer.toJson<int>(categoryId),
-      'page': serializer.toJson<int>(page),
-      'pageLimit': serializer.toJson<int>(pageLimit),
     };
   }
 
-  MenuItemDbDto copyWith(
+  MenuItemDataClass copyWith(
           {int? id,
           String? title,
+          String? description,
           String? image,
-          double? price,
-          int? categoryId,
-          int? page,
-          int? pageLimit}) =>
-      MenuItemDbDto(
+          PriceDto? price,
+          int? categoryId}) =>
+      MenuItemDataClass(
         id: id ?? this.id,
         title: title ?? this.title,
+        description: description ?? this.description,
         image: image ?? this.image,
         price: price ?? this.price,
         categoryId: categoryId ?? this.categoryId,
-        page: page ?? this.page,
-        pageLimit: pageLimit ?? this.pageLimit,
       );
-  MenuItemDbDto copyWithCompanion(MenuItemsCompanion data) {
-    return MenuItemDbDto(
+  MenuItemDataClass copyWithCompanion(MenuItemsCompanion data) {
+    return MenuItemDataClass(
       id: data.id.present ? data.id.value : this.id,
       title: data.title.present ? data.title.value : this.title,
+      description:
+          data.description.present ? data.description.value : this.description,
       image: data.image.present ? data.image.value : this.image,
       price: data.price.present ? data.price.value : this.price,
       categoryId:
           data.categoryId.present ? data.categoryId.value : this.categoryId,
-      page: data.page.present ? data.page.value : this.page,
-      pageLimit: data.pageLimit.present ? data.pageLimit.value : this.pageLimit,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('MenuItemDbDto(')
+    return (StringBuffer('MenuItemDataClass(')
           ..write('id: $id, ')
           ..write('title: $title, ')
+          ..write('description: $description, ')
           ..write('image: $image, ')
           ..write('price: $price, ')
-          ..write('categoryId: $categoryId, ')
-          ..write('page: $page, ')
-          ..write('pageLimit: $pageLimit')
+          ..write('categoryId: $categoryId')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode =>
-      Object.hash(id, title, image, price, categoryId, page, pageLimit);
+      Object.hash(id, title, description, image, price, categoryId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is MenuItemDbDto &&
+      (other is MenuItemDataClass &&
           other.id == this.id &&
           other.title == this.title &&
+          other.description == this.description &&
           other.image == this.image &&
           other.price == this.price &&
-          other.categoryId == this.categoryId &&
-          other.page == this.page &&
-          other.pageLimit == this.pageLimit);
+          other.categoryId == this.categoryId);
 }
 
-class MenuItemsCompanion extends UpdateCompanion<MenuItemDbDto> {
+class MenuItemsCompanion extends UpdateCompanion<MenuItemDataClass> {
   final Value<int> id;
   final Value<String> title;
+  final Value<String> description;
   final Value<String> image;
-  final Value<double> price;
+  final Value<PriceDto> price;
   final Value<int> categoryId;
-  final Value<int> page;
-  final Value<int> pageLimit;
-  final Value<int> rowid;
   const MenuItemsCompanion({
     this.id = const Value.absent(),
     this.title = const Value.absent(),
+    this.description = const Value.absent(),
     this.image = const Value.absent(),
     this.price = const Value.absent(),
     this.categoryId = const Value.absent(),
-    this.page = const Value.absent(),
-    this.pageLimit = const Value.absent(),
-    this.rowid = const Value.absent(),
   });
   MenuItemsCompanion.insert({
-    required int id,
+    this.id = const Value.absent(),
     required String title,
+    required String description,
     required String image,
-    required double price,
+    required PriceDto price,
     required int categoryId,
-    required int page,
-    required int pageLimit,
-    this.rowid = const Value.absent(),
-  })  : id = Value(id),
-        title = Value(title),
+  })  : title = Value(title),
+        description = Value(description),
         image = Value(image),
         price = Value(price),
-        categoryId = Value(categoryId),
-        page = Value(page),
-        pageLimit = Value(pageLimit);
-  static Insertable<MenuItemDbDto> custom({
+        categoryId = Value(categoryId);
+  static Insertable<MenuItemDataClass> custom({
     Expression<int>? id,
     Expression<String>? title,
+    Expression<String>? description,
     Expression<String>? image,
-    Expression<double>? price,
+    Expression<String>? price,
     Expression<int>? categoryId,
-    Expression<int>? page,
-    Expression<int>? pageLimit,
-    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (title != null) 'title': title,
+      if (description != null) 'description': description,
       if (image != null) 'image': image,
       if (price != null) 'price': price,
       if (categoryId != null) 'category_id': categoryId,
-      if (page != null) 'page': page,
-      if (pageLimit != null) 'page_limit': pageLimit,
-      if (rowid != null) 'rowid': rowid,
     });
   }
 
   MenuItemsCompanion copyWith(
       {Value<int>? id,
       Value<String>? title,
+      Value<String>? description,
       Value<String>? image,
-      Value<double>? price,
-      Value<int>? categoryId,
-      Value<int>? page,
-      Value<int>? pageLimit,
-      Value<int>? rowid}) {
+      Value<PriceDto>? price,
+      Value<int>? categoryId}) {
     return MenuItemsCompanion(
       id: id ?? this.id,
       title: title ?? this.title,
+      description: description ?? this.description,
       image: image ?? this.image,
       price: price ?? this.price,
       categoryId: categoryId ?? this.categoryId,
-      page: page ?? this.page,
-      pageLimit: pageLimit ?? this.pageLimit,
-      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -529,23 +497,18 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItemDbDto> {
     if (title.present) {
       map['title'] = Variable<String>(title.value);
     }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
     if (image.present) {
       map['image'] = Variable<String>(image.value);
     }
     if (price.present) {
-      map['price'] = Variable<double>(price.value);
+      map['price'] =
+          Variable<String>($MenuItemsTable.$converterprice.toSql(price.value));
     }
     if (categoryId.present) {
       map['category_id'] = Variable<int>(categoryId.value);
-    }
-    if (page.present) {
-      map['page'] = Variable<int>(page.value);
-    }
-    if (pageLimit.present) {
-      map['page_limit'] = Variable<int>(pageLimit.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
     }
     return map;
   }
@@ -555,12 +518,10 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItemDbDto> {
     return (StringBuffer('MenuItemsCompanion(')
           ..write('id: $id, ')
           ..write('title: $title, ')
+          ..write('description: $description, ')
           ..write('image: $image, ')
           ..write('price: $price, ')
-          ..write('categoryId: $categoryId, ')
-          ..write('page: $page, ')
-          ..write('pageLimit: $pageLimit, ')
-          ..write('rowid: $rowid')
+          ..write('categoryId: $categoryId')
           ..write(')'))
         .toString();
   }
@@ -591,11 +552,11 @@ typedef $$MenuCategoriesTableUpdateCompanionBuilder = MenuCategoriesCompanion
 });
 
 final class $$MenuCategoriesTableReferences extends BaseReferences<
-    _$MenuDatabase, $MenuCategoriesTable, MenuCategoryDbDto> {
+    _$MenuDatabase, $MenuCategoriesTable, MenuCategoryDataClass> {
   $$MenuCategoriesTableReferences(
       super.$_db, super.$_table, super.$_typedResult);
 
-  static MultiTypedResultKey<$MenuItemsTable, List<MenuItemDbDto>>
+  static MultiTypedResultKey<$MenuItemsTable, List<MenuItemDataClass>>
       _menuItemsRefsTable(_$MenuDatabase db) =>
           MultiTypedResultKey.fromTable(db.menuItems,
               aliasName: $_aliasNameGenerator(
@@ -704,14 +665,14 @@ class $$MenuCategoriesTableAnnotationComposer
 class $$MenuCategoriesTableTableManager extends RootTableManager<
     _$MenuDatabase,
     $MenuCategoriesTable,
-    MenuCategoryDbDto,
+    MenuCategoryDataClass,
     $$MenuCategoriesTableFilterComposer,
     $$MenuCategoriesTableOrderingComposer,
     $$MenuCategoriesTableAnnotationComposer,
     $$MenuCategoriesTableCreateCompanionBuilder,
     $$MenuCategoriesTableUpdateCompanionBuilder,
-    (MenuCategoryDbDto, $$MenuCategoriesTableReferences),
-    MenuCategoryDbDto,
+    (MenuCategoryDataClass, $$MenuCategoriesTableReferences),
+    MenuCategoryDataClass,
     PrefetchHooks Function({bool menuItemsRefs})> {
   $$MenuCategoriesTableTableManager(
       _$MenuDatabase db, $MenuCategoriesTable table)
@@ -775,38 +736,34 @@ class $$MenuCategoriesTableTableManager extends RootTableManager<
 typedef $$MenuCategoriesTableProcessedTableManager = ProcessedTableManager<
     _$MenuDatabase,
     $MenuCategoriesTable,
-    MenuCategoryDbDto,
+    MenuCategoryDataClass,
     $$MenuCategoriesTableFilterComposer,
     $$MenuCategoriesTableOrderingComposer,
     $$MenuCategoriesTableAnnotationComposer,
     $$MenuCategoriesTableCreateCompanionBuilder,
     $$MenuCategoriesTableUpdateCompanionBuilder,
-    (MenuCategoryDbDto, $$MenuCategoriesTableReferences),
-    MenuCategoryDbDto,
+    (MenuCategoryDataClass, $$MenuCategoriesTableReferences),
+    MenuCategoryDataClass,
     PrefetchHooks Function({bool menuItemsRefs})>;
 typedef $$MenuItemsTableCreateCompanionBuilder = MenuItemsCompanion Function({
-  required int id,
+  Value<int> id,
   required String title,
+  required String description,
   required String image,
-  required double price,
+  required PriceDto price,
   required int categoryId,
-  required int page,
-  required int pageLimit,
-  Value<int> rowid,
 });
 typedef $$MenuItemsTableUpdateCompanionBuilder = MenuItemsCompanion Function({
   Value<int> id,
   Value<String> title,
+  Value<String> description,
   Value<String> image,
-  Value<double> price,
+  Value<PriceDto> price,
   Value<int> categoryId,
-  Value<int> page,
-  Value<int> pageLimit,
-  Value<int> rowid,
 });
 
 final class $$MenuItemsTableReferences
-    extends BaseReferences<_$MenuDatabase, $MenuItemsTable, MenuItemDbDto> {
+    extends BaseReferences<_$MenuDatabase, $MenuItemsTable, MenuItemDataClass> {
   $$MenuItemsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $MenuCategoriesTable _categoryIdTable(_$MenuDatabase db) =>
@@ -839,17 +796,16 @@ class $$MenuItemsTableFilterComposer
   ColumnFilters<String> get title => $composableBuilder(
       column: $table.title, builder: (column) => ColumnFilters(column));
 
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
   ColumnFilters<String> get image => $composableBuilder(
       column: $table.image, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<double> get price => $composableBuilder(
-      column: $table.price, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get page => $composableBuilder(
-      column: $table.page, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get pageLimit => $composableBuilder(
-      column: $table.pageLimit, builder: (column) => ColumnFilters(column));
+  ColumnWithTypeConverterFilters<PriceDto, PriceDto, String> get price =>
+      $composableBuilder(
+          column: $table.price,
+          builder: (column) => ColumnWithTypeConverterFilters(column));
 
   $$MenuCategoriesTableFilterComposer get categoryId {
     final $$MenuCategoriesTableFilterComposer composer = $composerBuilder(
@@ -887,17 +843,14 @@ class $$MenuItemsTableOrderingComposer
   ColumnOrderings<String> get title => $composableBuilder(
       column: $table.title, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get image => $composableBuilder(
       column: $table.image, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<double> get price => $composableBuilder(
+  ColumnOrderings<String> get price => $composableBuilder(
       column: $table.price, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get page => $composableBuilder(
-      column: $table.page, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get pageLimit => $composableBuilder(
-      column: $table.pageLimit, builder: (column) => ColumnOrderings(column));
 
   $$MenuCategoriesTableOrderingComposer get categoryId {
     final $$MenuCategoriesTableOrderingComposer composer = $composerBuilder(
@@ -935,17 +888,14 @@ class $$MenuItemsTableAnnotationComposer
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
 
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
   GeneratedColumn<String> get image =>
       $composableBuilder(column: $table.image, builder: (column) => column);
 
-  GeneratedColumn<double> get price =>
+  GeneratedColumnWithTypeConverter<PriceDto, String> get price =>
       $composableBuilder(column: $table.price, builder: (column) => column);
-
-  GeneratedColumn<int> get page =>
-      $composableBuilder(column: $table.page, builder: (column) => column);
-
-  GeneratedColumn<int> get pageLimit =>
-      $composableBuilder(column: $table.pageLimit, builder: (column) => column);
 
   $$MenuCategoriesTableAnnotationComposer get categoryId {
     final $$MenuCategoriesTableAnnotationComposer composer = $composerBuilder(
@@ -971,14 +921,14 @@ class $$MenuItemsTableAnnotationComposer
 class $$MenuItemsTableTableManager extends RootTableManager<
     _$MenuDatabase,
     $MenuItemsTable,
-    MenuItemDbDto,
+    MenuItemDataClass,
     $$MenuItemsTableFilterComposer,
     $$MenuItemsTableOrderingComposer,
     $$MenuItemsTableAnnotationComposer,
     $$MenuItemsTableCreateCompanionBuilder,
     $$MenuItemsTableUpdateCompanionBuilder,
-    (MenuItemDbDto, $$MenuItemsTableReferences),
-    MenuItemDbDto,
+    (MenuItemDataClass, $$MenuItemsTableReferences),
+    MenuItemDataClass,
     PrefetchHooks Function({bool categoryId})> {
   $$MenuItemsTableTableManager(_$MenuDatabase db, $MenuItemsTable table)
       : super(TableManagerState(
@@ -993,42 +943,34 @@ class $$MenuItemsTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> title = const Value.absent(),
+            Value<String> description = const Value.absent(),
             Value<String> image = const Value.absent(),
-            Value<double> price = const Value.absent(),
+            Value<PriceDto> price = const Value.absent(),
             Value<int> categoryId = const Value.absent(),
-            Value<int> page = const Value.absent(),
-            Value<int> pageLimit = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
           }) =>
               MenuItemsCompanion(
             id: id,
             title: title,
+            description: description,
             image: image,
             price: price,
             categoryId: categoryId,
-            page: page,
-            pageLimit: pageLimit,
-            rowid: rowid,
           ),
           createCompanionCallback: ({
-            required int id,
+            Value<int> id = const Value.absent(),
             required String title,
+            required String description,
             required String image,
-            required double price,
+            required PriceDto price,
             required int categoryId,
-            required int page,
-            required int pageLimit,
-            Value<int> rowid = const Value.absent(),
           }) =>
               MenuItemsCompanion.insert(
             id: id,
             title: title,
+            description: description,
             image: image,
             price: price,
             categoryId: categoryId,
-            page: page,
-            pageLimit: pageLimit,
-            rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
@@ -1077,14 +1019,14 @@ class $$MenuItemsTableTableManager extends RootTableManager<
 typedef $$MenuItemsTableProcessedTableManager = ProcessedTableManager<
     _$MenuDatabase,
     $MenuItemsTable,
-    MenuItemDbDto,
+    MenuItemDataClass,
     $$MenuItemsTableFilterComposer,
     $$MenuItemsTableOrderingComposer,
     $$MenuItemsTableAnnotationComposer,
     $$MenuItemsTableCreateCompanionBuilder,
     $$MenuItemsTableUpdateCompanionBuilder,
-    (MenuItemDbDto, $$MenuItemsTableReferences),
-    MenuItemDbDto,
+    (MenuItemDataClass, $$MenuItemsTableReferences),
+    MenuItemDataClass,
     PrefetchHooks Function({bool categoryId})>;
 
 class $MenuDatabaseManager {

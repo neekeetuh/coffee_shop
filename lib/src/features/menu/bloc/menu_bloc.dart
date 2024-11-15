@@ -49,16 +49,20 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
       LoadItemsEvent event, Emitter<MenuState> emit) async {
     emit(LoadingMenuState(items: state.items, categories: state.categories));
     try {
-      int currentPage = 0;
       var allItems = state.items ?? [];
       for (var category in state.categories ?? []) {
-        final items = await _menuRepository.loadCategoryItems(
-            category: category, page: currentPage, limit: _pageLimit);
-        currentPage++;
-        if (items.length < _pageLimit) {
-          currentPage = 0;
+        int currentPage = 0;
+        bool nextCategory = false;
+        while (nextCategory == false) {
+          final items = await _menuRepository.loadCategoryItems(
+              category: category, page: currentPage, limit: _pageLimit);
+          currentPage++;
+          if (items.length < _pageLimit) {
+            currentPage = 0;
+            nextCategory = true;
+          }
+          allItems.addAll(items);
         }
-        allItems.addAll(items);
       }
       emit(SuccessfulMenuState(items: allItems, categories: state.categories));
     } on Exception catch (e) {

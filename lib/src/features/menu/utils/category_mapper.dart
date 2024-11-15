@@ -8,14 +8,14 @@ extension CategoryMapper on MenuCategoryDto {
   }
 }
 
-extension DbDtoMapper on MenuCategoryDto {
-  MenuCategoryDbDto toDbDto() {
-    return MenuCategoryDbDto(id: id, title: slug);
+extension DtoToDataClassMapper on MenuCategoryDto {
+  MenuCategoryDataClass toDataClass() {
+    return MenuCategoryDataClass(id: id, title: slug);
   }
 }
 
-extension CategoryModelFromDbDto on MenuCategoryDbDto {
-  MenuCategory toModel() {
-    return MenuCategory(id: id, title: title);
+extension DataClassToDtoMapper on MenuCategoryDataClass {
+  MenuCategoryDto toDto() {
+    return MenuCategoryDto(id: id, slug: title);
   }
 }

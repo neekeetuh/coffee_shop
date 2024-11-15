@@ -4,7 +4,7 @@ import 'package:coffee_shop/src/features/menu/models/dto/menu_category_dto.dart'
 import 'package:dio/dio.dart';
 
 abstract interface class ICategoriesDataSource {
-  Future<List<IMenuCategoryDto>> fetchCategories();
+  Future<List<MenuCategoryDto>> fetchCategories();
 }
 
 final class NetworkCategoriesDataSource implements ICategoriesDataSource {

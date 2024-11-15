@@ -1,6 +1,6 @@
 part of 'database.dart';
 
-@DataClassName('MenuCategoryDbDto', implementing: [IMenuCategoryDto])
+@DataClassName('MenuCategoryDataClass')
 class MenuCategories extends Table {
   IntColumn get id => integer()();
   TextColumn get title => text()();
@@ -9,16 +9,15 @@ class MenuCategories extends Table {
   Set<Column<Object>>? get primaryKey => {id};
 }
 
-@DataClassName('MenuItemDbDto', implementing: [IMenuItemDto])
+@DataClassName('MenuItemDataClass')
 class MenuItems extends Table {
   IntColumn get id => integer()();
   TextColumn get title => text()();
+  TextColumn get description => text()();
   TextColumn get image => text()();
-  RealColumn get price => real()();
+  TextColumn get price => text().map(PriceDto.converter)();
   IntColumn get categoryId => integer().references(MenuCategories, #id)();
-  IntColumn get page => integer()();
-  IntColumn get pageLimit => integer()();
 
   @override
-  Set<Column<Object>>? get primaryKey => {id, page, pageLimit};
+  Set<Column<Object>>? get primaryKey => {id};
 }

@@ -7,8 +7,8 @@ part of 'price_dto.dart';
 // **************************************************************************
 
 PriceDto _$PriceDtoFromJson(Map<String, dynamic> json) => PriceDto(
-      json['value'] as String,
-      json['currency'] as String,
+      value: json['value'] as String,
+      currency: json['currency'] as String,
     );
 
 Map<String, dynamic> _$PriceDtoToJson(PriceDto instance) => <String, dynamic>{

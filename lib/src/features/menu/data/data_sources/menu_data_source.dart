@@ -4,7 +4,7 @@ import 'package:coffee_shop/src/features/menu/models/dto/menu_item_dto.dart';
 import 'package:dio/dio.dart';
 
 abstract interface class IMenuDataSource {
-  Future<List<IMenuItemDto>> fetchMenuItems(
+  Future<List<MenuItemDto>> fetchMenuItems(
       {String categoryId = '0', int page = 0, int limit = 25});
 }
 
@@ -17,7 +17,7 @@ final class NetworkMenuDataSource implements INetworkMenuDataSource {
 
   const NetworkMenuDataSource({required this.dio});
   @override
-  Future<List<IMenuItemDto>> fetchMenuItems(
+  Future<List<MenuItemDto>> fetchMenuItems(
       {String categoryId = '0', int page = 0, int limit = 25}) async {
     try {
       final response = await dio.get(

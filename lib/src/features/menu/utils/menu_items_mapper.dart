@@ -1,4 +1,5 @@
 import 'package:coffee_shop/src/features/menu/data/database/database.dart';
+import 'package:coffee_shop/src/features/menu/models/dto/menu_category_dto.dart';
 import 'package:coffee_shop/src/features/menu/models/dto/menu_item_dto.dart';
 import 'package:coffee_shop/src/features/menu/models/dto/menu_item_with_category_db_dto.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_item.dart';
@@ -16,26 +17,29 @@ extension MenuItemsMapper on MenuItemDto {
   }
 }
 
-extension DbDtoMapper on MenuItemDto {
-  MenuItemDbDto toDbDto(int page, int pageLimit) {
-    return MenuItemDbDto(
-        id: id,
-        title: name,
-        image: imageUrl,
-        price: double.parse(prices[0].value),
-        categoryId: category.id,
-        page: page,
-        pageLimit: pageLimit);
+extension DtoToDataClassMapper on MenuItemDto {
+  MenuItemDataClass toDataClass() {
+    return MenuItemDataClass(
+      id: id,
+      title: name,
+      image: imageUrl,
+      price: prices[0],
+      categoryId: category.id,
+      description: description,
+    );
   }
 }
 
-extension MenuItemModelFromDbDto on MenuItemWithCategoryDbDto {
-  MenuItem toModel() {
-    return MenuItem(
-        id: menuItemDbDto.id,
-        title: menuItemDbDto.title,
-        image: menuItemDbDto.image,
-        price: menuItemDbDto.price,
-        category: menuCategoryDbDto.toModel());
+extension MenuItemWithCategoryToDtoMapper on MenuItemWithCategoryData {
+  MenuItemDto toDto() {
+    return MenuItemDto(
+      id: menuItemData.id,
+      name: menuItemData.title,
+      description: menuItemData.description,
+      category: MenuCategoryDto(
+          id: menuCategoryData.id, slug: menuCategoryData.title),
+      imageUrl: menuItemData.image,
+      prices: [menuItemData.price],
+    );
   }
 }

@@ -1,12 +1,11 @@
 import 'package:coffee_shop/src/features/menu/data/database/database.dart';
-import 'package:coffee_shop/src/features/menu/models/dto/menu_item_dto.dart';
 
-class MenuItemWithCategoryDbDto implements IMenuItemDto {
-  final MenuItemDbDto menuItemDbDto;
-  final MenuCategoryDbDto menuCategoryDbDto;
+class MenuItemWithCategoryData {
+  final MenuItemDataClass menuItemData;
+  final MenuCategoryDataClass menuCategoryData;
 
-  const MenuItemWithCategoryDbDto({
-    required this.menuItemDbDto,
-    required this.menuCategoryDbDto,
+  const MenuItemWithCategoryData({
+    required this.menuItemData,
+    required this.menuCategoryData,
   });
 }

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:coffee_shop/src/features/menu/data/data_sources/menu_data_source.dart';
 import 'package:coffee_shop/src/features/menu/data/data_sources/savable_menu_data_source.dart';
 import 'package:coffee_shop/src/features/menu/models/dto/menu_item_dto.dart';
-import 'package:coffee_shop/src/features/menu/models/dto/menu_item_with_category_db_dto.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_item.dart';
 import 'package:coffee_shop/src/features/menu/utils/menu_items_mapper.dart';
@@ -25,22 +24,19 @@ final class MenuRepository implements IMenuRepository {
   @override
   Future<List<MenuItem>> loadCategoryItems(
       {required MenuCategory category, int page = 0, int limit = 25}) async {
+    var dtos = <MenuItemDto>[];
     try {
-      final dtos = await _networkMenuDataSource.fetchMenuItems(
+      dtos = await _networkMenuDataSource.fetchMenuItems(
         categoryId: category.id.toString(),
         page: page,
         limit: limit,
-      ) as List<MenuItemDto>;
-      final dbDtos = dtos.map((dto) => dto.toDbDto(page, limit)).toList();
-      _dbMenuItemsDataSource.saveMenuItems(items: dbDtos);
-      return dtos.map((dto) => dto.toModel()).toList();
+      );
+      _dbMenuItemsDataSource.saveMenuItems(items: dtos);
     } on SocketException {
-      final dbDtos = await _dbMenuItemsDataSource.fetchMenuItems(
-          categoryId: category.id.toString(),
-          page: page,
-          limit: limit) as List<MenuItemWithCategoryDbDto>;
-      return dbDtos.map((dto) => dto.toModel()).toList();
+      dtos = await _dbMenuItemsDataSource.fetchMenuItems(
+          categoryId: category.id.toString(), page: page, limit: limit);
     }
+    return dtos.map((dto) => dto.toModel()).toList();
   }
 
   @override
