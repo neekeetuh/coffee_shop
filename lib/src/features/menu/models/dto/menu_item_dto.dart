@@ -6,8 +6,14 @@ part 'menu_item_dto.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class MenuItemDto {
-  const MenuItemDto(this.id, this.name, this.description, this.category,
-      this.imageUrl, this.prices);
+  const MenuItemDto({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.category,
+    required this.imageUrl,
+    required this.prices,
+  });
   final int id;
   final String name;
   final String description;

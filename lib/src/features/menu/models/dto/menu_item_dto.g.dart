@@ -7,12 +7,13 @@ part of 'menu_item_dto.dart';
 // **************************************************************************
 
 MenuItemDto _$MenuItemDtoFromJson(Map<String, dynamic> json) => MenuItemDto(
-      (json['id'] as num).toInt(),
-      json['name'] as String,
-      json['description'] as String,
-      MenuCategoryDto.fromJson(json['category'] as Map<String, dynamic>),
-      json['imageUrl'] as String,
-      (json['prices'] as List<dynamic>)
+      id: (json['id'] as num).toInt(),
+      name: json['name'] as String,
+      description: json['description'] as String,
+      category:
+          MenuCategoryDto.fromJson(json['category'] as Map<String, dynamic>),
+      imageUrl: json['imageUrl'] as String,
+      prices: (json['prices'] as List<dynamic>)
           .map((e) => PriceDto.fromJson(e as Map<String, dynamic>))
           .toList(),
     );

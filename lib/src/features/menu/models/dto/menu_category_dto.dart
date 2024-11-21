@@ -4,7 +4,7 @@ part 'menu_category_dto.g.dart';
 
 @JsonSerializable()
 class MenuCategoryDto {
-  const MenuCategoryDto(this.id, this.slug);
+  const MenuCategoryDto({required this.id, required this.slug});
   final int id;
   final String slug;
 

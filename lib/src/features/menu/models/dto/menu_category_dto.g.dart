@@ -8,8 +8,8 @@ part of 'menu_category_dto.dart';
 
 MenuCategoryDto _$MenuCategoryDtoFromJson(Map<String, dynamic> json) =>
     MenuCategoryDto(
-      (json['id'] as num).toInt(),
-      json['slug'] as String,
+      id: (json['id'] as num).toInt(),
+      slug: json['slug'] as String,
     );
 
 Map<String, dynamic> _$MenuCategoryDtoToJson(MenuCategoryDto instance) =>
