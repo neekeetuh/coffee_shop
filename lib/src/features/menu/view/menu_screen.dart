@@ -12,6 +12,7 @@ import 'package:coffee_shop/src/features/menu/providers/chosen_category_provider
 import 'package:coffee_shop/src/features/menu/view/widgets/cart_button.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/categories_choice_bar_sliver.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/category_section_sliver.dart';
+import 'package:coffee_shop/src/features/locations/view/widgets/selected_location_sliver.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -122,6 +123,9 @@ class MenuScreenView extends StatelessWidget {
                 children: [
                   CustomScrollView(
                     slivers: [
+                      const SelectedLocationSliver(
+                        location: 'Ленина, 15',
+                      ),
                       CategoriesChoiceBarSliver(
                           key: appBarKey, categories: categories),
                       ...List.generate(categories.length, (int i) {
