@@ -1,4 +1,5 @@
 import 'package:coffee_shop/src/features/locations/view/map_screen.dart';
+import 'package:coffee_shop/src/features/locations/view/widgets/selected_location_bottom_sheet.dart';
 import 'package:coffee_shop/src/theme/image_sources.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,10 @@ class SelectedLocationSliver extends StatelessWidget {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const MapScreen()),
           );
+          showModalBottomSheet(
+              barrierColor: Colors.transparent,
+              context: context,
+              builder: (context) => const SelectedLocationBottomSheet());
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
