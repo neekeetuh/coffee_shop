@@ -15,6 +15,7 @@ class SelectedLocationSliver extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const MapScreen()),
