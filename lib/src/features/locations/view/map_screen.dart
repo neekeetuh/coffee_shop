@@ -9,7 +9,6 @@ class MapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locationsBloc = context.read<LocationsBloc>();
     return Scaffold(
       body: Stack(
         children: [
@@ -29,13 +28,7 @@ class MapScreen extends StatelessWidget {
                   CustomIconButton(
                     icon: Icons.map_outlined,
                     onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                                  value: locationsBloc,
-                                  child: const LocationsScreen(),
-                                )),
-                      );
+                      _onPressLocationsButton(context);
                     },
                   ),
                 ],
@@ -44,6 +37,17 @@ class MapScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _onPressLocationsButton(BuildContext context) {
+    final locationsBloc = context.read<LocationsBloc>();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+          builder: (context) => BlocProvider.value(
+                value: locationsBloc,
+                child: const LocationsScreen(),
+              )),
     );
   }
 }

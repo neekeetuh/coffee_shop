@@ -1,4 +1,5 @@
 import 'package:coffee_shop/src/features/locations/bloc/locations_bloc.dart';
+import 'package:coffee_shop/src/features/locations/models/location_model.dart';
 import 'package:coffee_shop/src/features/locations/view/map_screen.dart';
 import 'package:coffee_shop/src/features/locations/view/widgets/selected_location_bottom_sheet.dart';
 import 'package:coffee_shop/src/theme/image_sources.dart';
@@ -13,10 +14,11 @@ class SelectedLocationSliver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locationsBloc = context.read<LocationsBloc>();
-    final selectedLocation =
-        context.select((LocationsBloc bloc) => bloc.state.selectedLocation);
-    return SliverToBoxAdapter(
-      child: GestureDetector(
+    return SliverAppBar(
+      toolbarHeight: 40,
+      pinned: true,
+      scrolledUnderElevation: 0.0,
+      flexibleSpace: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
           Navigator.of(context).push(
@@ -45,8 +47,13 @@ class SelectedLocationSliver extends StatelessWidget {
                 width: 24,
               ),
               const SizedBox(width: 10),
-              Text(
-                selectedLocation?.address ?? 'Адрес не выбран',
+              BlocSelector<LocationsBloc, LocationsState, LocationModel?>(
+                selector: (state) => state.selectedLocation,
+                builder: (context, selectedLocation) {
+                  return Text(
+                    selectedLocation?.address ?? 'Адрес не выбран',
+                  );
+                },
               )
             ],
           ),
