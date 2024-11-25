@@ -1,3 +1,6 @@
+import 'package:coffee_shop/src/features/locations/bloc/locations_bloc.dart';
+import 'package:coffee_shop/src/features/locations/data/data_sources/locations_data_source.dart';
+import 'package:coffee_shop/src/features/locations/data/locations_repository.dart';
 import 'package:coffee_shop/src/features/menu/bloc/menu_bloc.dart';
 import 'package:coffee_shop/src/features/menu/data/category_repository.dart';
 import 'package:coffee_shop/src/features/menu/data/data_sources/categories_data_source.dart';
@@ -84,12 +87,24 @@ class MenuScreen extends StatelessWidget {
                   networkMenuDataSource: NetworkMenuDataSource(dio: dio),
                   dbMenuItemsDataSource:
                       DbMenuDataSource(menuDb: context.read<MenuDatabase>()))),
+          RepositoryProvider(
+            create: (BuildContext context) => LocationsRepository(
+                networkLocationsDataSource: LocationsDataSource(dio: dio)),
+          )
         ],
-        child: BlocProvider(
-          create: (context) => MenuBloc(
-            categoryRepository: context.read<CategoryRepository>(),
-            menuRepository: context.read<MenuRepository>(),
-          ),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => MenuBloc(
+                categoryRepository: context.read<CategoryRepository>(),
+                menuRepository: context.read<MenuRepository>(),
+              ),
+            ),
+            BlocProvider(
+              create: (context) => LocationsBloc(
+                  locationsRepository: context.read<LocationsRepository>()),
+            ),
+          ],
           child: const MenuScreenView(),
         ),
       ),
@@ -123,9 +138,7 @@ class MenuScreenView extends StatelessWidget {
                 children: [
                   CustomScrollView(
                     slivers: [
-                      const SelectedLocationSliver(
-                        location: 'Ленина, 15',
-                      ),
+                      const SelectedLocationSliver(),
                       CategoriesChoiceBarSliver(
                           key: appBarKey, categories: categories),
                       ...List.generate(categories.length, (int i) {

@@ -1,6 +1,8 @@
 import 'package:coffee_shop/src/common/widgets/custom_bottom_sheet.dart';
 import 'package:coffee_shop/src/common/widgets/custom_text_button.dart';
+import 'package:coffee_shop/src/features/locations/bloc/locations_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SelectedLocationBottomSheet extends StatelessWidget {
   const SelectedLocationBottomSheet({
@@ -9,15 +11,17 @@ class SelectedLocationBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectedLocation =
+        context.select((LocationsBloc bloc) => bloc.state.selectedLocation);
     return CustomBottomSheet(
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.all(10.0),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
               child: Text(
-                'Ленина, 15',
-                style: TextStyle(
+                selectedLocation?.address ?? 'Адрес не выбран',
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
                 ),

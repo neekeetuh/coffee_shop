@@ -1,12 +1,15 @@
 import 'package:coffee_shop/src/common/widgets/custom_icon_button.dart';
+import 'package:coffee_shop/src/features/locations/bloc/locations_bloc.dart';
 import 'package:coffee_shop/src/features/locations/view/locations_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final locationsBloc = context.read<LocationsBloc>();
     return Scaffold(
       body: Stack(
         children: [
@@ -28,7 +31,10 @@ class MapScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                            builder: (context) => const LocationsScreen()),
+                            builder: (context) => BlocProvider.value(
+                                  value: locationsBloc,
+                                  child: const LocationsScreen(),
+                                )),
                       );
                     },
                   ),
