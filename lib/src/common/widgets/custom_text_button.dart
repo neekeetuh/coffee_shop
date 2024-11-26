@@ -8,14 +8,14 @@ class CustomTextButton extends StatelessWidget {
     required this.text,
   });
 
-  final Function onPressed;
+  final void Function() onPressed;
   final String text;
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
       style: ButtonStyle(padding: WidgetStateProperty.all(EdgeInsets.zero)),
-      onPressed: () => onPressed,
+      onPressed: onPressed,
       child: Container(
         alignment: Alignment.center,
         width: double.infinity,

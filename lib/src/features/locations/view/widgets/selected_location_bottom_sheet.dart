@@ -3,12 +3,15 @@ import 'package:coffee_shop/src/common/widgets/custom_text_button.dart';
 import 'package:coffee_shop/src/features/locations/bloc/locations_bloc.dart';
 import 'package:coffee_shop/src/features/locations/models/location_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 class SelectedLocationBottomSheet extends StatelessWidget {
   const SelectedLocationBottomSheet({
     super.key,
+    required this.location,
   });
+
+  final LocationModel location;
 
   @override
   Widget build(BuildContext context) {
@@ -17,27 +20,30 @@ class SelectedLocationBottomSheet extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(10.0),
-              child:
-                  BlocSelector<LocationsBloc, LocationsState, LocationModel?>(
-                selector: (state) => state.selectedLocation,
-                builder: (context, selectedLocation) {
-                  return Text(
-                    selectedLocation?.address ?? 'Адрес не выбран',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  );
-                },
-              ),
-            ),
+                padding: const EdgeInsets.all(10.0),
+                child: Text(
+                  location.address,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                  ),
+                )),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: CustomTextButton(onPressed: () {}, text: 'Выбрать'),
+              child: Center(
+                child: CustomTextButton(
+                  onPressed: () => _onPressChooseLocationButton(context),
+                  text: 'Выбрать',
+                ),
+              ),
             )
           ],
         ),
         height: MediaQuery.sizeOf(context).height * 0.2);
+  }
+
+  _onPressChooseLocationButton(BuildContext context) {
+    context.read<LocationsBloc>().add(SetLocationEvent(location: location));
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 }

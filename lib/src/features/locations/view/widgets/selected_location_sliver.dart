@@ -1,7 +1,6 @@
 import 'package:coffee_shop/src/features/locations/bloc/locations_bloc.dart';
 import 'package:coffee_shop/src/features/locations/models/location_model.dart';
 import 'package:coffee_shop/src/features/locations/view/map_screen.dart';
-import 'package:coffee_shop/src/features/locations/view/widgets/selected_location_bottom_sheet.dart';
 import 'package:coffee_shop/src/theme/image_sources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,13 +28,6 @@ class SelectedLocationSliver extends StatelessWidget {
               ),
             ),
           );
-          showModalBottomSheet(
-              barrierColor: Colors.transparent,
-              context: context,
-              builder: (context) => BlocProvider.value(
-                    value: locationsBloc,
-                    child: const SelectedLocationBottomSheet(),
-                  ));
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
@@ -51,7 +43,9 @@ class SelectedLocationSliver extends StatelessWidget {
                 selector: (state) => state.selectedLocation,
                 builder: (context, selectedLocation) {
                   return Text(
-                    selectedLocation?.address ?? 'Адрес не выбран',
+                    selectedLocation?.address ??
+                        locationsBloc.state.locations?[0].address ??
+                        'Адрес не выбран',
                   );
                 },
               )

@@ -118,6 +118,7 @@ class MenuScreenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.read<MenuBloc>().add(const LoadCategoriesEvent());
+    context.read<LocationsBloc>().add(const LoadLocationsEvent());
     return Scaffold(
       body: SafeArea(
         child: BlocConsumer<MenuBloc, MenuState>(
@@ -138,7 +139,15 @@ class MenuScreenView extends StatelessWidget {
                 children: [
                   CustomScrollView(
                     slivers: [
-                      const SelectedLocationSliver(),
+                      BlocBuilder<LocationsBloc, LocationsState>(
+                        builder: (context, state) {
+                          if (state is! LoadingLocationsState) {
+                            return const SelectedLocationSliver();
+                          }
+                          return const SliverToBoxAdapter(
+                              child: SizedBox.shrink());
+                        },
+                      ),
                       CategoriesChoiceBarSliver(
                           key: appBarKey, categories: categories),
                       ...List.generate(categories.length, (int i) {

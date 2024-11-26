@@ -16,7 +16,7 @@ class LocationTile extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         context.read<LocationsBloc>().add(SetLocationEvent(location: location));
-        Navigator.of(context).pop();
+        Navigator.of(context).popUntil((route) => route.isFirst);
       },
       behavior: HitTestBehavior.translucent,
       child: Padding(
