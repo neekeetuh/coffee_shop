@@ -27,8 +27,11 @@ class LocationsBloc extends Bloc<LocationsEvent, LocationsState> {
         locations: state.locations, selectedLocation: state.selectedLocation));
     try {
       final locations = await _locationsRepository.loadLocations();
+      LocationModel? selectedLocation =
+          await _locationsRepository.fetchSelectedLocation();
+      selectedLocation ??= locations[0];
       emit(SuccessfulLocationsState(
-          locations: locations, selectedLocation: state.selectedLocation));
+          locations: locations, selectedLocation: selectedLocation));
     } on Exception catch (e) {
       emit(ErrorLocationsState(
           locations: state.locations,
@@ -44,8 +47,11 @@ class LocationsBloc extends Bloc<LocationsEvent, LocationsState> {
   Future<void> _onSetLocation(
       SetLocationEvent event, Emitter<LocationsState> emit) async {
     try {
+      await _locationsRepository.setSelectedLocation(event.location);
       emit(SuccessfulLocationsState(
           locations: state.locations, selectedLocation: event.location));
+    } catch (e) {
+      print(e);
     } finally {
       emit(IdleLocationsState(
           locations: state.locations,

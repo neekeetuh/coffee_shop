@@ -43,9 +43,7 @@ class SelectedLocationSliver extends StatelessWidget {
                 selector: (state) => state.selectedLocation,
                 builder: (context, selectedLocation) {
                   return Text(
-                    selectedLocation?.address ??
-                        locationsBloc.state.locations?[0].address ??
-                        'Адрес не выбран',
+                    selectedLocation?.address ?? 'Адрес не выбран',
                   );
                 },
               )

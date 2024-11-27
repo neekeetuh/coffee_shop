@@ -1,5 +1,6 @@
 import 'package:coffee_shop/src/features/locations/bloc/locations_bloc.dart';
 import 'package:coffee_shop/src/features/locations/data/data_sources/locations_data_source.dart';
+import 'package:coffee_shop/src/features/locations/data/data_sources/savable_locations_data_source.dart';
 import 'package:coffee_shop/src/features/locations/data/locations_repository.dart';
 import 'package:coffee_shop/src/features/menu/bloc/menu_bloc.dart';
 import 'package:coffee_shop/src/features/menu/data/category_repository.dart';
@@ -7,7 +8,7 @@ import 'package:coffee_shop/src/features/menu/data/data_sources/categories_data_
 import 'package:coffee_shop/src/features/menu/data/data_sources/menu_data_source.dart';
 import 'package:coffee_shop/src/features/menu/data/data_sources/savable_categories_data_source.dart';
 import 'package:coffee_shop/src/features/menu/data/data_sources/savable_menu_data_source.dart';
-import 'package:coffee_shop/src/features/menu/data/database/database.dart';
+import 'package:coffee_shop/src/common/data/databases/drift_database/database.dart';
 import 'package:coffee_shop/src/features/menu/data/menu_repository.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
 import 'package:coffee_shop/src/features/menu/providers/cart_provider.dart';
@@ -89,7 +90,10 @@ class MenuScreen extends StatelessWidget {
                       DbMenuDataSource(menuDb: context.read<MenuDatabase>()))),
           RepositoryProvider(
             create: (BuildContext context) => LocationsRepository(
-                networkLocationsDataSource: LocationsDataSource(dio: dio)),
+                networkLocationsDataSource: LocationsDataSource(dio: dio),
+                dbLocationsDataSource: DbLocationsDataSource(
+                  menuDb: context.read<MenuDatabase>(),
+                )),
           )
         ],
         child: MultiBlocProvider(

@@ -1,4 +1,4 @@
-import 'package:coffee_shop/src/features/menu/data/database/database.dart';
+import 'package:coffee_shop/src/common/data/databases/drift_database/database.dart';
 
 class MenuItemWithCategoryData {
   final MenuItemDataClass menuItemData;

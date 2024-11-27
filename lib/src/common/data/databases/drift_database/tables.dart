@@ -21,3 +21,13 @@ class MenuItems extends Table {
   @override
   Set<Column<Object>>? get primaryKey => {id};
 }
+
+@DataClassName('LocationDataClass')
+class Locations extends Table {
+  TextColumn get address => text()();
+  RealColumn get latitude => real()();
+  RealColumn get longitude => real()();
+
+  @override
+  Set<Column<Object>>? get primaryKey => {latitude, longitude};
+}

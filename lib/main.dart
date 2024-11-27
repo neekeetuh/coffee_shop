@@ -1,5 +1,5 @@
 import 'package:coffee_shop/src/app.dart';
-import 'package:coffee_shop/src/features/menu/data/database/database.dart';
+import 'package:coffee_shop/src/common/data/databases/drift_database/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

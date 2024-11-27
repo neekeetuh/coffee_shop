@@ -39,7 +39,7 @@ class SelectedLocationBottomSheet extends StatelessWidget {
             )
           ],
         ),
-        height: MediaQuery.sizeOf(context).height * 0.2);
+        height: MediaQuery.sizeOf(context).height * 0.21);
   }
 
   _onPressChooseLocationButton(BuildContext context) {
