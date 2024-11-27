@@ -8,6 +8,7 @@ import com.yandex.mapkit.MapKitFactory
 class MainActivity: FlutterActivity() {
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         MapKitFactory.setApiKey("7dd43329-2427-41e2-b1e6-df91fa244363")
+        MapKitFactory.setLocale("ru_RU")
         super.configureFlutterEngine(flutterEngine)
     }
 }

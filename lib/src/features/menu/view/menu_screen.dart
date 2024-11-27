@@ -202,6 +202,7 @@ class MenuScreenView extends StatelessWidget {
     ScrollNotification scrollInfo,
   ) {
     _setCategoriesSectionsHeights();
+    if (context.read<MenuBloc>().state is LoadingMenuState) return false;
     if (scrollInfo is ScrollEndNotification &&
         scrollInfo.metrics.axis == Axis.vertical) {
       int firstVisibleSectionIndex = -1;
