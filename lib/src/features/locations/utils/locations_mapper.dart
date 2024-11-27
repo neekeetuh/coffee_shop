@@ -5,7 +5,7 @@ extension LocationsMapper on LocationDto {
   LocationModel toModel() {
     return LocationModel(
       address: address,
-      lattitude: lat,
+      latitude: lat,
       longitude: lng,
     );
   }

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:coffee_shop/src/common/widgets/custom_icon_button.dart';
 import 'package:coffee_shop/src/features/locations/bloc/locations_bloc.dart';
+import 'package:coffee_shop/src/features/locations/models/location_model.dart';
+import 'package:coffee_shop/src/features/locations/services/locations_service.dart';
 import 'package:coffee_shop/src/features/locations/view/locations_screen.dart';
 import 'package:coffee_shop/src/features/locations/view/widgets/selected_location_bottom_sheet.dart';
 import 'package:coffee_shop/src/theme/image_sources.dart';
@@ -40,7 +42,7 @@ class _MapScreenState extends State<MapScreen> {
                   },
                   mapId: MapObjectId(location.address),
                   point: Point(
-                      latitude: location.lattitude,
+                      latitude: location.latitude,
                       longitude: location.longitude),
                   icon: PlacemarkIcon.single(
                     PlacemarkIconStyle(
@@ -53,6 +55,9 @@ class _MapScreenState extends State<MapScreen> {
                 ))
             .toList() ??
         [];
+    LocationModel? lastSelectedLocation =
+        context.read<LocationsBloc>().state.selectedLocation ??
+            context.read<LocationsBloc>().state.locations?[0];
     return Scaffold(
       body: Stack(
         children: [
@@ -60,12 +65,20 @@ class _MapScreenState extends State<MapScreen> {
             mapObjects: mapObjects,
             onMapCreated: (controller) async {
               mapControllerCompleter.complete(controller);
-              final selectedLocation =
-                  context.read<LocationsBloc>().state.selectedLocation;
-              await _moveCameraTo(
+              final currentLocation = await LocationsService().getLocation();
+              if (currentLocation == null) {
+                if (lastSelectedLocation == null) return;
+                _moveCameraTo(
+                  point: Point(
+                      latitude: lastSelectedLocation.latitude,
+                      longitude: lastSelectedLocation.longitude),
+                );
+                return;
+              }
+              _moveCameraTo(
                 point: Point(
-                    latitude: selectedLocation?.lattitude ?? 55.028858,
-                    longitude: selectedLocation?.longitude ?? 73.279944),
+                    latitude: currentLocation.latitude!,
+                    longitude: currentLocation.longitude!),
               );
             },
           ),
@@ -97,11 +110,12 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _moveCameraTo({required Point point, double zoom = 15}) async {
-    (await (mapControllerCompleter.future))
-        .moveCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target: point,
-      zoom: zoom,
-    )));
+    (await (mapControllerCompleter.future)).moveCamera(
+        CameraUpdate.newCameraPosition(CameraPosition(
+          target: point,
+          zoom: zoom,
+        )),
+        animation: const MapAnimation(duration: 2));
   }
 
   void _onPressLocationsButton(BuildContext context) {
