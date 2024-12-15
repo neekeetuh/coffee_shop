@@ -1,20 +1,13 @@
+import 'package:coffee_shop/src/app.dart';
+import 'package:coffee_shop/src/common/data/databases/drift_database/database.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MainApp());
-}
-
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
-    );
-  }
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(Provider<MenuDatabase>(
+    create: (BuildContext context) => MenuDatabase(),
+    child: const CoffeeShopApp(),
+    dispose: (context, db) => db.close(),
+  ));
 }
