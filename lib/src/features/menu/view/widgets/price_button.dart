@@ -1,5 +1,6 @@
 import 'package:coffee_shop/src/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PriceButton extends StatelessWidget {
   const PriceButton({
@@ -24,7 +25,7 @@ class PriceButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             color: AppColors.primaryColor),
         child: Text(
-          '$price руб',
+          AppLocalizations.of(context)!.priceAlt(price),
           style: const TextStyle(
             fontSize: 12,
             color: AppColors.white,

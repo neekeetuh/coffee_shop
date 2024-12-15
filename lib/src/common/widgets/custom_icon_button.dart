@@ -9,7 +9,7 @@ class CustomIconButton extends StatelessWidget {
   });
 
   final IconData icon;
-  final void Function() onTap;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {

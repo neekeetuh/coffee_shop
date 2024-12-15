@@ -3,6 +3,7 @@ import 'package:coffee_shop/src/features/locations/view/widgets/location_tile.da
 import 'package:coffee_shop/src/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LocationsScreen extends StatelessWidget {
   const LocationsScreen({super.key});
@@ -12,9 +13,9 @@ class LocationsScreen extends StatelessWidget {
     context.read<LocationsBloc>().add(const LoadLocationsEvent());
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Наши кофейни',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.ourCoffeeShops,
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w700,
           ),

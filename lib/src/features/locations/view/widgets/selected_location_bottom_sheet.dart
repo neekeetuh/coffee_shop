@@ -1,17 +1,18 @@
 import 'package:coffee_shop/src/common/widgets/custom_bottom_sheet.dart';
 import 'package:coffee_shop/src/common/widgets/custom_text_button.dart';
-import 'package:coffee_shop/src/features/locations/bloc/locations_bloc.dart';
 import 'package:coffee_shop/src/features/locations/models/location_model.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SelectedLocationBottomSheet extends StatelessWidget {
   const SelectedLocationBottomSheet({
     super.key,
     required this.location,
+    required this.onChooseLocation,
   });
 
   final LocationModel location;
+  final VoidCallback onChooseLocation;
 
   @override
   Widget build(BuildContext context) {
@@ -32,18 +33,13 @@ class SelectedLocationBottomSheet extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Center(
                 child: CustomTextButton(
-                  onPressed: () => _onPressChooseLocationButton(context),
-                  text: 'Выбрать',
+                  onPressed: onChooseLocation,
+                  text: AppLocalizations.of(context)!.choose,
                 ),
               ),
             )
           ],
         ),
         height: MediaQuery.sizeOf(context).height * 0.21);
-  }
-
-  _onPressChooseLocationButton(BuildContext context) {
-    context.read<LocationsBloc>().add(SetLocationEvent(location: location));
-    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 }

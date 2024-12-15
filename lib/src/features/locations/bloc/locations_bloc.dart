@@ -46,12 +46,14 @@ class LocationsBloc extends Bloc<LocationsEvent, LocationsState> {
 
   Future<void> _onSetLocation(
       SetLocationEvent event, Emitter<LocationsState> emit) async {
+    emit(LoadingLocationsState(
+        locations: state.locations, selectedLocation: state.selectedLocation));
     try {
       await _locationsRepository.setSelectedLocation(event.location);
       emit(SuccessfulLocationsState(
           locations: state.locations, selectedLocation: event.location));
     } catch (e) {
-      print(e);
+      emit(ErrorLocationsState(error: e));
     } finally {
       emit(IdleLocationsState(
           locations: state.locations,

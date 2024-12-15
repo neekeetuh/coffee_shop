@@ -6,6 +6,7 @@ import 'package:coffee_shop/src/theme/app_colors.dart';
 import 'package:coffee_shop/src/theme/image_sources.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CartBottomSheet extends StatelessWidget {
   const CartBottomSheet({super.key});
@@ -28,10 +29,10 @@ class CartBottomSheet extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Ваш заказ',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w700, fontSize: 24),
+                    Text(
+                      AppLocalizations.of(context)!.yourOrder,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 24),
                     ),
                     GestureDetector(
                       onTap: () {
@@ -81,7 +82,9 @@ class CartBottomSheet extends StatelessWidget {
                                       fontSize: 16,
                                     ),
                                   ),
-                                  Text('${item.price} Р',
+                                  Text(
+                                      AppLocalizations.of(context)!
+                                          .price(item.price),
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 16,

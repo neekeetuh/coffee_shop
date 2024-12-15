@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:coffee_shop/src/common/utils/snack_bar_service.dart';
 import 'package:coffee_shop/src/common/widgets/custom_icon_button.dart';
 import 'package:coffee_shop/src/features/locations/bloc/locations_bloc.dart';
 import 'package:coffee_shop/src/features/locations/models/location_model.dart';
@@ -9,7 +10,9 @@ import 'package:coffee_shop/src/features/locations/view/widgets/selected_locatio
 import 'package:coffee_shop/src/theme/image_sources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:location/location.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -33,11 +36,14 @@ class _MapScreenState extends State<MapScreen> {
                     showModalBottomSheet(
                         barrierColor: Colors.transparent,
                         context: context,
-                        builder: (context) => BlocProvider.value(
-                              value: locationsBloc,
-                              child: SelectedLocationBottomSheet(
-                                location: location,
-                              ),
+                        builder: (context) => SelectedLocationBottomSheet(
+                              onChooseLocation: () {
+                                locationsBloc
+                                    .add(SetLocationEvent(location: location));
+                                Navigator.of(context)
+                                    .popUntil((route) => route.isFirst);
+                              },
+                              location: location,
                             ));
                   },
                   mapId: MapObjectId(location.address),
@@ -65,7 +71,13 @@ class _MapScreenState extends State<MapScreen> {
             mapObjects: mapObjects,
             onMapCreated: (controller) async {
               mapControllerCompleter.complete(controller);
-              final currentLocation = await LocationsService().getLocation();
+              LocationData? currentLocation;
+              try {
+                currentLocation = await LocationsService().getLocation();
+              } on Exception catch (_) {
+                onGetLocationError();
+                return;
+              }
               if (currentLocation == null) {
                 if (lastSelectedLocation == null) return;
                 _moveCameraTo(
@@ -127,5 +139,10 @@ class _MapScreenState extends State<MapScreen> {
                 child: const LocationsScreen(),
               )),
     );
+  }
+
+  void onGetLocationError() {
+    SnackBarService.showSnackBar(
+        context, AppLocalizations.of(context)!.getLocationErrorMessage);
   }
 }

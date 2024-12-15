@@ -6,6 +6,7 @@ import 'package:coffee_shop/src/theme/image_sources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CartButton extends StatelessWidget {
   const CartButton({
@@ -52,7 +53,7 @@ class CartButton extends StatelessWidget {
                 width: 10,
               ),
               Text(
-                '${price.toStringAsFixed(2)} Р',
+                AppLocalizations.of(context)!.price(price.toStringAsFixed(2)),
                 style: const TextStyle(
                   color: AppColors.white,
                   fontWeight: FontWeight.w400,

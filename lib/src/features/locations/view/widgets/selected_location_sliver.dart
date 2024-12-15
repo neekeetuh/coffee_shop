@@ -4,6 +4,7 @@ import 'package:coffee_shop/src/features/locations/view/map_screen.dart';
 import 'package:coffee_shop/src/theme/image_sources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SelectedLocationSliver extends StatelessWidget {
   const SelectedLocationSliver({
@@ -43,7 +44,8 @@ class SelectedLocationSliver extends StatelessWidget {
                 selector: (state) => state.selectedLocation,
                 builder: (context, selectedLocation) {
                   return Text(
-                    selectedLocation?.address ?? 'Адрес не выбран',
+                    selectedLocation?.address ??
+                        AppLocalizations.of(context)!.locationIsNotSelected,
                   );
                 },
               )
