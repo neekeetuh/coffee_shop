@@ -1,35 +1,31 @@
 import 'package:coffee_shop/src/theme/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class PriceButton extends StatelessWidget {
-  const PriceButton({
+class CustomTextButton extends StatelessWidget {
+  const CustomTextButton({
     super.key,
-    required this.price,
     required this.onPressed,
+    required this.text,
   });
 
-  final double price;
   final void Function() onPressed;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
+    return TextButton(
+      style: ButtonStyle(padding: WidgetStateProperty.all(EdgeInsets.zero)),
+      onPressed: onPressed,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 4),
         alignment: Alignment.center,
         width: double.infinity,
-        height: 24,
+        padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             color: AppColors.primaryColor),
         child: Text(
-          AppLocalizations.of(context)!.priceAlt(price),
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.white,
-          ),
+          text,
+          style: const TextStyle(color: AppColors.white, fontSize: 20),
         ),
       ),
     );

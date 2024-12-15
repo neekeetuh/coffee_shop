@@ -527,17 +527,251 @@ class MenuItemsCompanion extends UpdateCompanion<MenuItemDataClass> {
   }
 }
 
+class $LocationsTable extends Locations
+    with TableInfo<$LocationsTable, LocationDataClass> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _addressMeta =
+      const VerificationMeta('address');
+  @override
+  late final GeneratedColumn<String> address = GeneratedColumn<String>(
+      'address', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _latitudeMeta =
+      const VerificationMeta('latitude');
+  @override
+  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
+      'latitude', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _longitudeMeta =
+      const VerificationMeta('longitude');
+  @override
+  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
+      'longitude', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [address, latitude, longitude];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'locations';
+  @override
+  VerificationContext validateIntegrity(Insertable<LocationDataClass> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('address')) {
+      context.handle(_addressMeta,
+          address.isAcceptableOrUnknown(data['address']!, _addressMeta));
+    } else if (isInserting) {
+      context.missing(_addressMeta);
+    }
+    if (data.containsKey('latitude')) {
+      context.handle(_latitudeMeta,
+          latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta));
+    } else if (isInserting) {
+      context.missing(_latitudeMeta);
+    }
+    if (data.containsKey('longitude')) {
+      context.handle(_longitudeMeta,
+          longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta));
+    } else if (isInserting) {
+      context.missing(_longitudeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {latitude, longitude};
+  @override
+  LocationDataClass map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocationDataClass(
+      address: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}address'])!,
+      latitude: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}latitude'])!,
+      longitude: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}longitude'])!,
+    );
+  }
+
+  @override
+  $LocationsTable createAlias(String alias) {
+    return $LocationsTable(attachedDatabase, alias);
+  }
+}
+
+class LocationDataClass extends DataClass
+    implements Insertable<LocationDataClass> {
+  final String address;
+  final double latitude;
+  final double longitude;
+  const LocationDataClass(
+      {required this.address, required this.latitude, required this.longitude});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['address'] = Variable<String>(address);
+    map['latitude'] = Variable<double>(latitude);
+    map['longitude'] = Variable<double>(longitude);
+    return map;
+  }
+
+  LocationsCompanion toCompanion(bool nullToAbsent) {
+    return LocationsCompanion(
+      address: Value(address),
+      latitude: Value(latitude),
+      longitude: Value(longitude),
+    );
+  }
+
+  factory LocationDataClass.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocationDataClass(
+      address: serializer.fromJson<String>(json['address']),
+      latitude: serializer.fromJson<double>(json['latitude']),
+      longitude: serializer.fromJson<double>(json['longitude']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'address': serializer.toJson<String>(address),
+      'latitude': serializer.toJson<double>(latitude),
+      'longitude': serializer.toJson<double>(longitude),
+    };
+  }
+
+  LocationDataClass copyWith(
+          {String? address, double? latitude, double? longitude}) =>
+      LocationDataClass(
+        address: address ?? this.address,
+        latitude: latitude ?? this.latitude,
+        longitude: longitude ?? this.longitude,
+      );
+  LocationDataClass copyWithCompanion(LocationsCompanion data) {
+    return LocationDataClass(
+      address: data.address.present ? data.address.value : this.address,
+      latitude: data.latitude.present ? data.latitude.value : this.latitude,
+      longitude: data.longitude.present ? data.longitude.value : this.longitude,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocationDataClass(')
+          ..write('address: $address, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(address, latitude, longitude);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocationDataClass &&
+          other.address == this.address &&
+          other.latitude == this.latitude &&
+          other.longitude == this.longitude);
+}
+
+class LocationsCompanion extends UpdateCompanion<LocationDataClass> {
+  final Value<String> address;
+  final Value<double> latitude;
+  final Value<double> longitude;
+  final Value<int> rowid;
+  const LocationsCompanion({
+    this.address = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocationsCompanion.insert({
+    required String address,
+    required double latitude,
+    required double longitude,
+    this.rowid = const Value.absent(),
+  })  : address = Value(address),
+        latitude = Value(latitude),
+        longitude = Value(longitude);
+  static Insertable<LocationDataClass> custom({
+    Expression<String>? address,
+    Expression<double>? latitude,
+    Expression<double>? longitude,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (address != null) 'address': address,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocationsCompanion copyWith(
+      {Value<String>? address,
+      Value<double>? latitude,
+      Value<double>? longitude,
+      Value<int>? rowid}) {
+    return LocationsCompanion(
+      address: address ?? this.address,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (address.present) {
+      map['address'] = Variable<String>(address.value);
+    }
+    if (latitude.present) {
+      map['latitude'] = Variable<double>(latitude.value);
+    }
+    if (longitude.present) {
+      map['longitude'] = Variable<double>(longitude.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocationsCompanion(')
+          ..write('address: $address, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$MenuDatabase extends GeneratedDatabase {
   _$MenuDatabase(QueryExecutor e) : super(e);
   $MenuDatabaseManager get managers => $MenuDatabaseManager(this);
   late final $MenuCategoriesTable menuCategories = $MenuCategoriesTable(this);
   late final $MenuItemsTable menuItems = $MenuItemsTable(this);
+  late final $LocationsTable locations = $LocationsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [menuCategories, menuItems];
+      [menuCategories, menuItems, locations];
 }
 
 typedef $$MenuCategoriesTableCreateCompanionBuilder = MenuCategoriesCompanion
@@ -1028,6 +1262,147 @@ typedef $$MenuItemsTableProcessedTableManager = ProcessedTableManager<
     (MenuItemDataClass, $$MenuItemsTableReferences),
     MenuItemDataClass,
     PrefetchHooks Function({bool categoryId})>;
+typedef $$LocationsTableCreateCompanionBuilder = LocationsCompanion Function({
+  required String address,
+  required double latitude,
+  required double longitude,
+  Value<int> rowid,
+});
+typedef $$LocationsTableUpdateCompanionBuilder = LocationsCompanion Function({
+  Value<String> address,
+  Value<double> latitude,
+  Value<double> longitude,
+  Value<int> rowid,
+});
+
+class $$LocationsTableFilterComposer
+    extends Composer<_$MenuDatabase, $LocationsTable> {
+  $$LocationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get address => $composableBuilder(
+      column: $table.address, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get latitude => $composableBuilder(
+      column: $table.latitude, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get longitude => $composableBuilder(
+      column: $table.longitude, builder: (column) => ColumnFilters(column));
+}
+
+class $$LocationsTableOrderingComposer
+    extends Composer<_$MenuDatabase, $LocationsTable> {
+  $$LocationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get address => $composableBuilder(
+      column: $table.address, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get latitude => $composableBuilder(
+      column: $table.latitude, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get longitude => $composableBuilder(
+      column: $table.longitude, builder: (column) => ColumnOrderings(column));
+}
+
+class $$LocationsTableAnnotationComposer
+    extends Composer<_$MenuDatabase, $LocationsTable> {
+  $$LocationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get address =>
+      $composableBuilder(column: $table.address, builder: (column) => column);
+
+  GeneratedColumn<double> get latitude =>
+      $composableBuilder(column: $table.latitude, builder: (column) => column);
+
+  GeneratedColumn<double> get longitude =>
+      $composableBuilder(column: $table.longitude, builder: (column) => column);
+}
+
+class $$LocationsTableTableManager extends RootTableManager<
+    _$MenuDatabase,
+    $LocationsTable,
+    LocationDataClass,
+    $$LocationsTableFilterComposer,
+    $$LocationsTableOrderingComposer,
+    $$LocationsTableAnnotationComposer,
+    $$LocationsTableCreateCompanionBuilder,
+    $$LocationsTableUpdateCompanionBuilder,
+    (
+      LocationDataClass,
+      BaseReferences<_$MenuDatabase, $LocationsTable, LocationDataClass>
+    ),
+    LocationDataClass,
+    PrefetchHooks Function()> {
+  $$LocationsTableTableManager(_$MenuDatabase db, $LocationsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocationsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> address = const Value.absent(),
+            Value<double> latitude = const Value.absent(),
+            Value<double> longitude = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              LocationsCompanion(
+            address: address,
+            latitude: latitude,
+            longitude: longitude,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String address,
+            required double latitude,
+            required double longitude,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              LocationsCompanion.insert(
+            address: address,
+            latitude: latitude,
+            longitude: longitude,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$LocationsTableProcessedTableManager = ProcessedTableManager<
+    _$MenuDatabase,
+    $LocationsTable,
+    LocationDataClass,
+    $$LocationsTableFilterComposer,
+    $$LocationsTableOrderingComposer,
+    $$LocationsTableAnnotationComposer,
+    $$LocationsTableCreateCompanionBuilder,
+    $$LocationsTableUpdateCompanionBuilder,
+    (
+      LocationDataClass,
+      BaseReferences<_$MenuDatabase, $LocationsTable, LocationDataClass>
+    ),
+    LocationDataClass,
+    PrefetchHooks Function()>;
 
 class $MenuDatabaseManager {
   final _$MenuDatabase _db;
@@ -1036,4 +1411,6 @@ class $MenuDatabaseManager {
       $$MenuCategoriesTableTableManager(_db, _db.menuCategories);
   $$MenuItemsTableTableManager get menuItems =>
       $$MenuItemsTableTableManager(_db, _db.menuItems);
+  $$LocationsTableTableManager get locations =>
+      $$LocationsTableTableManager(_db, _db.locations);
 }

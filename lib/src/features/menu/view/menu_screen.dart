@@ -1,10 +1,14 @@
+import 'package:coffee_shop/src/features/locations/bloc/locations_bloc.dart';
+import 'package:coffee_shop/src/features/locations/data/data_sources/locations_data_source.dart';
+import 'package:coffee_shop/src/features/locations/data/data_sources/savable_locations_data_source.dart';
+import 'package:coffee_shop/src/features/locations/data/locations_repository.dart';
 import 'package:coffee_shop/src/features/menu/bloc/menu_bloc.dart';
 import 'package:coffee_shop/src/features/menu/data/category_repository.dart';
 import 'package:coffee_shop/src/features/menu/data/data_sources/categories_data_source.dart';
 import 'package:coffee_shop/src/features/menu/data/data_sources/menu_data_source.dart';
 import 'package:coffee_shop/src/features/menu/data/data_sources/savable_categories_data_source.dart';
 import 'package:coffee_shop/src/features/menu/data/data_sources/savable_menu_data_source.dart';
-import 'package:coffee_shop/src/features/menu/data/database/database.dart';
+import 'package:coffee_shop/src/common/data/databases/drift_database/database.dart';
 import 'package:coffee_shop/src/features/menu/data/menu_repository.dart';
 import 'package:coffee_shop/src/features/menu/models/menu_category.dart';
 import 'package:coffee_shop/src/features/menu/providers/cart_provider.dart';
@@ -12,6 +16,7 @@ import 'package:coffee_shop/src/features/menu/providers/chosen_category_provider
 import 'package:coffee_shop/src/features/menu/view/widgets/cart_button.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/categories_choice_bar_sliver.dart';
 import 'package:coffee_shop/src/features/menu/view/widgets/category_section_sliver.dart';
+import 'package:coffee_shop/src/features/locations/view/widgets/selected_location_sliver.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,12 +88,27 @@ class MenuScreen extends StatelessWidget {
                   networkMenuDataSource: NetworkMenuDataSource(dio: dio),
                   dbMenuItemsDataSource:
                       DbMenuDataSource(menuDb: context.read<MenuDatabase>()))),
+          RepositoryProvider(
+            create: (BuildContext context) => LocationsRepository(
+                networkLocationsDataSource: LocationsDataSource(dio: dio),
+                dbLocationsDataSource: DbLocationsDataSource(
+                  menuDb: context.read<MenuDatabase>(),
+                )),
+          )
         ],
-        child: BlocProvider(
-          create: (context) => MenuBloc(
-            categoryRepository: context.read<CategoryRepository>(),
-            menuRepository: context.read<MenuRepository>(),
-          ),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => MenuBloc(
+                categoryRepository: context.read<CategoryRepository>(),
+                menuRepository: context.read<MenuRepository>(),
+              ),
+            ),
+            BlocProvider(
+              create: (context) => LocationsBloc(
+                  locationsRepository: context.read<LocationsRepository>()),
+            ),
+          ],
           child: const MenuScreenView(),
         ),
       ),
@@ -102,6 +122,7 @@ class MenuScreenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.read<MenuBloc>().add(const LoadCategoriesEvent());
+    context.read<LocationsBloc>().add(const LoadLocationsEvent());
     return Scaffold(
       body: SafeArea(
         child: BlocConsumer<MenuBloc, MenuState>(
@@ -122,6 +143,15 @@ class MenuScreenView extends StatelessWidget {
                 children: [
                   CustomScrollView(
                     slivers: [
+                      BlocBuilder<LocationsBloc, LocationsState>(
+                        builder: (context, state) {
+                          if (state is! LoadingLocationsState) {
+                            return const SelectedLocationSliver();
+                          }
+                          return const SliverToBoxAdapter(
+                              child: SizedBox.shrink());
+                        },
+                      ),
                       CategoriesChoiceBarSliver(
                           key: appBarKey, categories: categories),
                       ...List.generate(categories.length, (int i) {
@@ -172,6 +202,7 @@ class MenuScreenView extends StatelessWidget {
     ScrollNotification scrollInfo,
   ) {
     _setCategoriesSectionsHeights();
+    if (context.read<MenuBloc>().state is LoadingMenuState) return false;
     if (scrollInfo is ScrollEndNotification &&
         scrollInfo.metrics.axis == Axis.vertical) {
       int firstVisibleSectionIndex = -1;

@@ -12,14 +12,16 @@ abstract interface class IMenuDb {
   Future<List<MenuItemWithCategoryData>> fetchMenuItems(
       int categoryId, int page, int pageLimit);
   Future<void> insertMenuItems(List<MenuItemDataClass> items);
+  Future<List<LocationDataClass>> fetchLocations();
+  Future<void> insertLocations(List<LocationDataClass> locationsList);
 }
 
-@DriftDatabase(tables: [MenuCategories, MenuItems])
+@DriftDatabase(tables: [MenuCategories, MenuItems, Locations])
 class MenuDatabase extends _$MenuDatabase implements IMenuDb {
   MenuDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
@@ -31,6 +33,9 @@ class MenuDatabase extends _$MenuDatabase implements IMenuDb {
         if (from < 2) {
           await m.deleteTable(menuItems.actualTableName);
           await m.createTable(menuItems);
+        }
+        if (from < 3) {
+          await m.createTable(locations);
         }
       },
     );
@@ -89,6 +94,24 @@ class MenuDatabase extends _$MenuDatabase implements IMenuDb {
                 image: item.image,
                 price: item.price,
                 categoryId: item.categoryId,
+              )));
+    });
+  }
+
+  @override
+  Future<List<LocationDataClass>> fetchLocations() async {
+    return select(locations).get();
+  }
+
+  @override
+  Future<void> insertLocations(List<LocationDataClass> locationsList) async {
+    await batch((batch) {
+      batch.insertAllOnConflictUpdate(
+          locations,
+          locationsList.map((location) => LocationsCompanion.insert(
+                address: location.address,
+                latitude: location.latitude,
+                longitude: location.longitude,
               )));
     });
   }

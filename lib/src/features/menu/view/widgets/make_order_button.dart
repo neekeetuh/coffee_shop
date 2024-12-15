@@ -1,9 +1,10 @@
 import 'package:coffee_shop/src/common/utils/snack_bar_service.dart';
+import 'package:coffee_shop/src/common/widgets/custom_text_button.dart';
 import 'package:coffee_shop/src/features/menu/bloc/menu_bloc.dart';
 import 'package:coffee_shop/src/features/menu/providers/cart_provider.dart';
-import 'package:coffee_shop/src/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MakeOrderButton extends StatelessWidget {
   const MakeOrderButton({
@@ -18,26 +19,17 @@ class MakeOrderButton extends StatelessWidget {
           if (state.isSuccessful == true) {
             context.read<CartProvider>().clearCart();
             Navigator.of(context).pop();
-            SnackBarService.showSnackBar(context, 'Заказ создан');
+            SnackBarService.showSnackBar(
+                context, AppLocalizations.of(context)!.orderCreated);
           } else {
-            SnackBarService.showSnackBar(context, 'Возникла ошибка при заказе');
+            SnackBarService.showSnackBar(
+                context, AppLocalizations.of(context)!.makeOrderErrorMessage);
           }
         }
       },
-      child: TextButton(
+      child: CustomTextButton(
+        text: AppLocalizations.of(context)!.makeOrder,
         onPressed: () => _onPressed(context),
-        child: Container(
-          alignment: Alignment.center,
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: AppColors.primaryColor),
-          child: const Text(
-            'Оформить заказ',
-            style: TextStyle(color: AppColors.white, fontSize: 20),
-          ),
-        ),
       ),
     );
   }

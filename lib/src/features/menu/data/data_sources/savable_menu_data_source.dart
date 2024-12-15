@@ -1,5 +1,5 @@
 import 'package:coffee_shop/src/features/menu/data/data_sources/menu_data_source.dart';
-import 'package:coffee_shop/src/features/menu/data/database/database.dart';
+import 'package:coffee_shop/src/common/data/databases/drift_database/database.dart';
 import 'package:coffee_shop/src/features/menu/models/dto/menu_item_dto.dart';
 import 'package:coffee_shop/src/features/menu/utils/menu_items_mapper.dart';
 

@@ -1,0 +1,13 @@
+{
+    "title": "Кофейня",
+    "price": "{price} Р",
+    "priceAlt": "{price} руб",
+    "yourOrder": "Ваш заказ",
+    "choose": "Выбрать",
+    "locationIsNotSelected": "Адрес не выбран",
+    "ourCoffeeShops": "Наши кофейни",
+    "getLocationErrorMessage": "Возникла ошибка при получении локации",
+    "orderCreated": "Заказ создан",
+    "makeOrderErrorMessage": "Возникла ошибка при заказе",
+    "makeOrder": "Оформить заказ"
+}
